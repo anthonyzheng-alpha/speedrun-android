@@ -63,6 +63,7 @@ import com.ichi2.anki.common.time.TimeManager
 import com.ichi2.anki.common.utils.android.HandlerUtils.executeFunctionWithDelay
 import com.ichi2.anki.common.utils.android.HandlerUtils.getDefaultLooper
 import com.ichi2.anki.common.utils.android.showThemedToast
+import com.ichi2.anki.dialogs.showMemoryModelDialog
 import com.ichi2.anki.libanki.Card
 import com.ichi2.anki.libanki.CardId
 import com.ichi2.anki.libanki.Collection
@@ -536,6 +537,10 @@ open class Reviewer :
                 Timber.i("Card Viewer:: Previous Card Info")
                 openPreviousCardInfo()
             }
+            R.id.action_memory_model -> {
+                Timber.i("Card Viewer:: Memory model")
+                openMemoryModel()
+            }
             R.id.user_action_1 -> userAction(1)
             R.id.user_action_2 -> userAction(2)
             R.id.user_action_3 -> userAction(3)
@@ -820,6 +825,20 @@ open class Reviewer :
         startActivityWithAnimation(intent, animation)
     }
 
+    /** Shows the memory model estimate (recall chance) for the current card. */
+    private fun openMemoryModel() {
+        val card = currentCard
+        if (card == null) {
+            showSnackbar(getString(R.string.multimedia_editor_something_wrong), Snackbar.LENGTH_SHORT)
+            return
+        }
+        Timber.i("opening memory model")
+        launchCatchingTask {
+            val stats = withCol { cardStatsData(card.id) }
+            showMemoryModelDialog(stats)
+        }
+    }
+
     // Related to https://github.com/ankidroid/Anki-Android/pull/11061#issuecomment-1107868455
     @NeedsTest("Order of operations needs Testing around Menu (Overflow) Icons and their colors.")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -856,6 +875,7 @@ open class Reviewer :
         menu.findItem(R.id.action_reschedule_card).title = TR.sentenceCase.setDueDate
         menu.findItem(R.id.action_card_info)?.title = TR.sentenceCase.cardInfo
         menu.findItem(R.id.action_previous_card_info)?.title = TR.sentenceCase.previousCardInfo
+        menu.findItem(R.id.action_memory_model)?.title = getString(R.string.memory_model_title)
         menu.findItem(R.id.action_delete)?.title = TR.sentenceCase.deleteNote
         // top-level (visible=false in XML) items, shown when only the card-level action is available
         menu.findItem(R.id.action_bury_card)?.title = TR.sentenceCase.buryCard

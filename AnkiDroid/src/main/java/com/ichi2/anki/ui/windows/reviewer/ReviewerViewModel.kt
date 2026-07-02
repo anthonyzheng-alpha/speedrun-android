@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import anki.collection.OpChanges
 import anki.frontend.SetSchedulingStatesRequest
 import anki.scheduler.CardAnswer.Rating
+import anki.stats.CardStatsResponse
 import com.ichi2.anki.AbstractFlashcardViewer
 import com.ichi2.anki.AbstractFlashcardViewer.Companion.RESULT_NO_MORE_CARDS
 import com.ichi2.anki.CollectionManager.TR
@@ -105,6 +106,7 @@ class ReviewerViewModel(
     val editNoteTagsFlow = MutableSharedFlow<NoteId>()
     val setDueDateFlow = MutableSharedFlow<CardId>()
     val resetProgressFlow = MutableSharedFlow<Unit>()
+    val memoryModelFlow = MutableSharedFlow<CardStatsResponse>()
     val answerFeedbackFlow = MutableSharedFlow<Rating>()
     val voiceRecorderEnabledFlow = MutableStateFlow(repository.isRecordVoiceEnabled)
     val whiteboardEnabledFlow = MutableStateFlow(repository.isWhiteboardEnabled)
@@ -276,6 +278,13 @@ class ReviewerViewModel(
         val destination = CardInfoDestination(cardId, EntryPoint.CURRENT_CARD_STUDY)
         Timber.i("Launching 'card info' for card %d", cardId)
         navigateFlow.emit(destination)
+    }
+
+    private suspend fun emitMemoryModel() {
+        val cardId = currentCard.await().id
+        val stats = withCol { cardStatsData(cardId) }
+        Timber.i("Showing memory model for card %d", cardId)
+        memoryModelFlow.emit(stats)
     }
 
     private suspend fun emitPreviousCardInfoDestination() {
@@ -698,6 +707,7 @@ class ReviewerViewModel(
                     ViewerAction.ADD_NOTE -> emitAddNoteDestination()
                     ViewerAction.CARD_INFO -> emitCardInfoDestination()
                     ViewerAction.PREVIOUS_CARD_INFO -> emitPreviousCardInfoDestination()
+                    ViewerAction.MEMORY_MODEL -> emitMemoryModel()
                     ViewerAction.DECK_OPTIONS -> emitDeckOptionsDestination()
                     ViewerAction.EDIT -> emitEditNoteDestination()
                     ViewerAction.TAG -> editNoteTags()

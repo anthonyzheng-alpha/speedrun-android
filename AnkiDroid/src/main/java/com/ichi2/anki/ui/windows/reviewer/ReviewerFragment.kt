@@ -48,6 +48,7 @@ import com.ichi2.anki.common.destinations.navigate
 import com.ichi2.anki.common.utils.android.isRobolectric
 import com.ichi2.anki.databinding.FragmentReviewerBinding
 import com.ichi2.anki.dialogs.showDeckOptionsSelectionDialog
+import com.ichi2.anki.dialogs.showMemoryModelDialog
 import com.ichi2.anki.dialogs.tags.TagsDialog
 import com.ichi2.anki.dialogs.tags.TagsDialogFactory
 import com.ichi2.anki.dialogs.tags.TagsDialogListener
@@ -601,6 +602,10 @@ class ReviewerFragment :
         viewModel.setDueDateFlow.collectIn(lifecycleScope) { cardId ->
             val dialogFragment = SetDueDateDialog.newInstance(listOf(cardId))
             showDialogFragment(dialogFragment)
+        }
+
+        viewModel.memoryModelFlow.flowWithLifecycle(lifecycle).collectIn(lifecycleScope) { stats ->
+            requireContext().showMemoryModelDialog(stats)
         }
 
         viewModel.pageUpFlow.flowWithLifecycle(lifecycle).collectIn(lifecycleScope) {

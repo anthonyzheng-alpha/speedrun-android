@@ -56,6 +56,7 @@ enum class ViewerAction(
     DECK_OPTIONS(R.id.action_deck_options, R.drawable.ic_tune_white, DISABLED),
     CARD_INFO(R.id.action_card_info, R.drawable.ic_dialog_info, DISABLED),
     PREVIOUS_CARD_INFO(R.id.action_previous_card_info, R.drawable.ic_outline_info_24, DISABLED),
+    MEMORY_MODEL(R.id.action_memory_model, R.drawable.ic_dialog_info, DISABLED),
     ADD_NOTE(R.id.action_add_note, R.drawable.ic_add, DISABLED),
     TAG(R.id.action_edit_tags, R.drawable.ic_tag, DISABLED),
     RESCHEDULE_NOTE(R.id.action_set_due_date, R.drawable.ic_reschedule, DISABLED),
@@ -209,6 +210,7 @@ enum class ViewerAction(
             // No default gestures
             DELETE,
             CARD_INFO,
+            MEMORY_MODEL,
             TAG,
             EXIT,
             RESCHEDULE_NOTE,
@@ -261,6 +263,7 @@ enum class ViewerAction(
                 TOGGLE_WHITEBOARD -> getString(R.string.gesture_toggle_whiteboard)
                 DECK_OPTIONS -> TR.sentenceCase.deckOptions
                 CARD_INFO -> TR.sentenceCase.cardInfo
+                MEMORY_MODEL -> getString(R.string.memory_model_title)
                 ADD_NOTE -> getString(R.string.menu_add_note)
                 TAG -> getString(R.string.menu_edit_tags)
                 RESET_PROGRESS -> getString(R.string.card_editor_reset_card)

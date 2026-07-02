@@ -451,5 +451,14 @@ opening the system text to speech settings fails">Failed to open text to speech 
     <string name="set_due_date_date_range">Date range</string>
 
     <string comment="Shown when retrying a running action" name="already_in_progress">Already in progress</string>
+
+    <!-- Memory model (estimated chance of recalling a card's fact on an exam) -->
+    <string name="memory_model_title" comment="Title of the memory model dialog and reviewer menu action">Memory model</string>
+    <string name="memory_model_recall_chance" comment="Label: estimated chance the user recalls this card's fact">Recall chance</string>
+    <string name="memory_model_range" comment="Label: plausible range of the recall chance estimate">Range</string>
+    <string name="memory_model_confidence" comment="Label: how confident the recall chance estimate is">Confidence</string>
+    <string name="memory_model_last_updated" comment="Label: date the estimate was last updated">Last updated</string>
+    <string name="memory_model_justification" comment="Label: short explanation of the recall chance estimate">Why</string>
+    <string name="memory_model_insufficient" comment="Shown when there is not enough review history to estimate recall">Not enough data yet to estimate recall.</string>
 </resources>
 
