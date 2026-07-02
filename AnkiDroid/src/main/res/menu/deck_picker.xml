@@ -60,6 +60,10 @@
         android:menuCategory="secondary"
         android:title="@string/model_browser_label"/>
     <item
+        android:id="@+id/action_practice_exam"
+        android:menuCategory="secondary"
+        android:title="@string/practice_exam_menu"/>
+    <item
         android:id="@+id/action_import"
         android:menuCategory="secondary"/>
     <item

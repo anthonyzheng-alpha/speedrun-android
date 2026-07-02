@@ -153,6 +153,7 @@ import com.ichi2.anki.observability.ChangeManager
 import com.ichi2.anki.pages.AnkiPackageImporterFragment
 import com.ichi2.anki.pages.CongratsPage
 import com.ichi2.anki.pages.CongratsPage.Companion.onDeckCompleted
+import com.ichi2.anki.practiceexam.PracticeExamActivity
 import com.ichi2.anki.receiver.SdCardReceiver
 import com.ichi2.anki.reviewreminders.ReviewRemindersDatabase
 import com.ichi2.anki.servicelayer.ScopedStorageService
@@ -1299,6 +1300,11 @@ open class DeckPicker :
                 } else {
                     sync()
                 }
+                return true
+            }
+            R.id.action_practice_exam -> {
+                Timber.i("DeckPicker:: Practice exam button pressed")
+                startActivity(Intent(this, PracticeExamActivity::class.java))
                 return true
             }
             R.id.action_import -> {

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<resources>
+    <string name="practice_exam_title">Practice Exam</string>
+    <string name="practice_exam_menu">Do Practice Exam</string>
+
+    <string name="practice_exam_topic_biology">Biology &amp; Biochemistry</string>
+    <string name="practice_exam_topic_chemistry">Chemistry &amp; Physics</string>
+    <string name="practice_exam_topic_psychology">Psychology &amp; Sociology</string>
+    <string name="practice_exam_topic_cars">CARS</string>
+
+    <string name="practice_exam_number_of_questions">Number of questions</string>
+    <string name="practice_exam_sections">Sections</string>
+    <string name="practice_exam_available">%1$d question(s) available for the selected sections. The exam will use %2$d.</string>
+    <string name="practice_exam_start">Start exam</string>
+    <string name="practice_exam_no_questions">No questions are available for the selected sections.</string>
+
+    <string name="practice_exam_progress">Question %1$d of %2$d</string>
+    <string name="practice_exam_back">Back</string>
+    <string name="practice_exam_next">Next</string>
+    <string name="practice_exam_finish">Finish</string>
+
+    <string name="practice_exam_results">Results</string>
+    <string name="practice_exam_score">%1$d / %2$d (%3$d%%)</string>
+    <string name="practice_exam_correct_answers">Correct answers</string>
+    <string name="practice_exam_review">Review</string>
+    <string name="practice_exam_retake">Retake</string>
+    <string name="practice_exam_topic_score">%1$s: %2$d / %3$d</string>
+    <string name="practice_exam_unanswered">You did not answer this question.</string>
+    <string name="practice_exam_correct_marker">(correct answer)</string>
+    <string name="practice_exam_your_answer">(your answer)</string>
+</resources>

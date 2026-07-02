@@ -459,6 +459,11 @@
             android:configChanges="orientation|screenSize"
             />
         <activity
+            android:name="com.ichi2.anki.practiceexam.PracticeExamActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            />
+        <activity
             android:name="com.ichi2.anki.utils.ConfigAwareSingleFragmentActivity"
             android:exported="false"
             />
