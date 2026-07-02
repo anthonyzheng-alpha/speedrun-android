@@ -460,5 +460,14 @@ opening the system text to speech settings fails">Failed to open text to speech 
     <string name="memory_model_last_updated" comment="Label: date the estimate was last updated">Last updated</string>
     <string name="memory_model_justification" comment="Label: short explanation of the recall chance estimate">Why</string>
     <string name="memory_model_insufficient" comment="Shown when there is not enough review history to estimate recall">Not enough data yet to estimate recall.</string>
+
+    <!-- Performance & readiness metrics (shown on the home screen and in a details dialog) -->
+    <string name="exam_metrics_title" comment="Title of the performance/readiness metrics dialog">Exam readiness</string>
+    <string name="exam_metrics_overall" comment="Heading for the overall (all-section) metrics">Overall</string>
+    <string name="exam_metrics_performance" comment="Label: estimated chance of answering a new exam-style question correctly">Performance</string>
+    <string name="exam_metrics_readiness" comment="Label: projected MCAT score">Projected MCAT</string>
+    <string name="exam_metrics_confidence_suffix" comment="Confidence percentage; %1$d is the number">%1$d%% confidence</string>
+    <string name="exam_metrics_home_summary" comment="Compact home-screen summary; %1$d is performance percent, %2$d the projected MCAT score">Performance %1$d%% \u00b7 Projected MCAT %2$d</string>
+    <string name="exam_metrics_insufficient" comment="Shown when there isn't enough data to estimate performance/readiness">Not enough data yet: study flashcards and take practice exams to get an estimate.</string>
 </resources>
 

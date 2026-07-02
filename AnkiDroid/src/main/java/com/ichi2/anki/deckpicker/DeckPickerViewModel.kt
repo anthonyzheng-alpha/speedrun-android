@@ -12,6 +12,7 @@ import anki.card_rendering.EmptyCardsReport
 import anki.collection.OpChanges
 import anki.decks.SetDeckCollapsedRequest
 import anki.i18n.GeneratedTranslations
+import anki.stats.ExamMetricsResponse
 import anki.sync.SyncStatusResponse
 import com.ichi2.anki.CollectionManager
 import com.ichi2.anki.CollectionManager.TR
@@ -162,6 +163,9 @@ class DeckPickerViewModel :
 
     /** "Studied N cards in 0 seconds today */
     val flowOfStudiedTodayStats = MutableStateFlow("")
+
+    /** Global performance/readiness metrics for the home screen; null until loaded. */
+    val flowOfExamMetrics = MutableStateFlow<ExamMetricsResponse?>(null)
 
     /** Flow that determines when the resizing divider should be visible */
     val flowOfResizingDividerVisible =
@@ -388,6 +392,8 @@ class DeckPickerViewModel :
                 // TODO: This is in the wrong place
                 // Backend returns studiedToday() with newlines for HTML formatting,so we replace them with spaces.
                 flowOfStudiedTodayStats.value = withCol { sched.studiedToday().replace("\n", " ") }
+
+                flowOfExamMetrics.value = withCol { examMetrics() }
 
                 /**
                  * Checks the current scheduler version and prompts the upgrade dialog if using the legacy version.

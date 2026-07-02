@@ -68,6 +68,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import anki.collection.OpChanges
+import anki.stats.ExamMetricsResponse
 import anki.sync.SyncStatusResponse
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -142,6 +143,7 @@ import com.ichi2.anki.dialogs.customstudy.CustomStudyDialog
 import com.ichi2.anki.dialogs.customstudy.CustomStudyDialog.CustomStudyAction
 import com.ichi2.anki.dialogs.customstudy.CustomStudyDialog.CustomStudyAction.Companion.REQUEST_KEY
 import com.ichi2.anki.dialogs.setDeckPickerContextMenuResultListener
+import com.ichi2.anki.dialogs.showExamMetricsDialog
 import com.ichi2.anki.export.ExportDialogFragment
 import com.ichi2.anki.filtered.FilteredDeckOptionsFragment
 import com.ichi2.anki.introduction.CollectionPermissionScreenLauncher
@@ -208,6 +210,7 @@ import kotlinx.coroutines.withContext
 import net.ankiweb.rsdroid.Translations
 import timber.log.Timber
 import java.io.File
+import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import com.ichi2.anki.common.android.R as CommonR
@@ -736,6 +739,23 @@ open class DeckPicker :
             }
         }
 
+        fun onExamMetricsChanged(metrics: ExamMetricsResponse?) {
+            val view = deckPickerBinding.examMetricsTextView
+            val performance = metrics?.performanceOverall
+            if (metrics == null || performance == null || !performance.hasEnoughData) {
+                view.isVisible = false
+                return
+            }
+            view.isVisible = true
+            view.text =
+                getString(
+                    R.string.exam_metrics_home_summary,
+                    performance.score.roundToInt(),
+                    metrics.readinessOverall.score.roundToInt(),
+                )
+            view.setOnClickListener { showExamMetricsDialog(metrics) }
+        }
+
         fun onCollectionStatusChanged(isInInitialState: Boolean) {
             // Hide the background when there are no cards to improve text readability.
             deckPickerBinding.background.isVisible = !isInInitialState
@@ -865,6 +885,7 @@ open class DeckPicker :
         viewModel.flowOfPromptUserToUpdateScheduler.launchCollectionInLifecycleScope(::onPromptUserToUpdateScheduler)
         viewModel.flowOfOptionsMenuState.filterNotNull().launchCollectionInLifecycleScope(::onOptionsMenuUpdated)
         viewModel.flowOfStudiedTodayStats.launchCollectionInLifecycleScope(::onStudiedTodayChanged)
+        viewModel.flowOfExamMetrics.launchCollectionInLifecycleScope(::onExamMetricsChanged)
         viewModel.flowOfDeckListInInitialState.filterNotNull().launchCollectionInLifecycleScope(::onCollectionStatusChanged)
         viewModel.flowOfCardsDue.launchCollectionInLifecycleScope(::onCardsDueChanged)
         viewModel.flowOfCollectionHasNoCards.launchCollectionInLifecycleScope(::onStudyOptionsVisibilityChanged)

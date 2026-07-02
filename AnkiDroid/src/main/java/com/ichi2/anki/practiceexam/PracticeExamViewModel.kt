@@ -4,6 +4,11 @@ package com.ichi2.anki.practiceexam
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import anki.stats.RecordPracticeExamRequest
+import com.ichi2.anki.CollectionManager.withCol
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Holds the state of a practice exam across configuration changes: the chosen
@@ -58,6 +63,31 @@ class PracticeExamViewModel(
             currentIndex += 1
         } else {
             phase = ExamPhase.RESULTS
+            persistResults()
+        }
+    }
+
+    /**
+     * Save the completed exam's per-topic results so they feed the
+     * performance/readiness metrics. Failures are non-fatal.
+     */
+    private fun persistResults() {
+        val results =
+            scoreByTopic().map { (topic, tally) ->
+                RecordPracticeExamRequest.TopicResult
+                    .newBuilder()
+                    .setTopic(topic.key)
+                    .setCorrect(tally.first)
+                    .setTotal(tally.second)
+                    .build()
+            }
+        if (results.isEmpty()) return
+        viewModelScope.launch {
+            try {
+                withCol { recordPracticeExam(results) }
+            } catch (e: Exception) {
+                Timber.w(e, "failed to record practice exam")
+            }
         }
     }
 

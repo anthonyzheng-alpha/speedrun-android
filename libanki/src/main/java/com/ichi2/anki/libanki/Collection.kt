@@ -58,6 +58,8 @@ import anki.search.searchNode
 import anki.search.sortOrder
 import anki.stats.CardStatsResponse
 import anki.stats.CardStatsResponse.StatsRevlogEntry
+import anki.stats.ExamMetricsResponse
+import anki.stats.RecordPracticeExamRequest
 import anki.sync.MediaSyncStatusResponse
 import anki.sync.SyncAuth
 import anki.sync.SyncCollectionResponse
@@ -1134,6 +1136,18 @@ class Collection(
     @CheckResult
     @LibAnkiAlias("get_review_logs")
     fun getReviewLogs(cardId: CardId): List<StatsRevlogEntry> = backend.getReviewLogs(cardId)
+
+    /** Global performance and readiness metrics, overall and per MCAT section. */
+    @CheckResult
+    @LibAnkiAlias("exam_metrics")
+    fun examMetrics(): ExamMetricsResponse = backend.examMetrics()
+
+    /** Persist a completed practice exam so it feeds the performance/readiness metrics. */
+    @LibAnkiAlias("record_practice_exam")
+    fun recordPracticeExam(
+        results: List<RecordPracticeExamRequest.TopicResult>,
+        timestamp: Long = 0,
+    ) = backend.recordPracticeExam(results, timestamp)
 
     @RustCleanup("check sched.studiedToday")
     @CheckResult
