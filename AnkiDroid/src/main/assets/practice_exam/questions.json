@@ -1,164 +1,153 @@
 {
-    "topics": [
-        "biology_biochemistry",
-        "chemistry_physics",
-        "psychology_sociology",
-        "cars"
-    ],
+    "topics": ["biology_biochemistry", "chemistry_physics", "psychology_sociology", "cars"],
     "questions": [
         {
             "id": "bb-001",
             "topic": "biology_biochemistry",
             "passage": "",
-            "question": "Which best describes the role of an enzyme in a biochemical reaction?",
+            "question": "Which of the following best describes the structure and mechanism of action of a peptide hormone?",
             "choices": [
-                "It lowers the activation energy of the reaction.",
-                "It raises the activation energy of the reaction.",
-                "It is permanently consumed by the reaction.",
-                "It changes the overall free energy (ΔG) of the reaction."
+                "Cholesterol derivative that binds to a receptor on the cell surface",
+                "Chain of amino acids that signals through a second messenger",
+                "Chain of amino acids that directly binds to DNA to alter gene expression",
+                "Cholesterol derivative that binds to an intracellular receptor and alters gene expression"
             ],
-            "answerIndex": 0,
-            "explanation": "Enzymes are catalysts that lower activation energy. They are not consumed and do not change ΔG or the position of equilibrium."
+            "answerIndex": 1,
+            "explanation": "Peptide hormones are chains of amino acids that bind to receptors on the cell surface to elicit a cellular response."
         },
         {
             "id": "bb-002",
             "topic": "biology_biochemistry",
             "passage": "",
-            "question": "During which phase of the cell cycle is DNA replicated?",
-            "choices": [
-                "G1 phase",
-                "S phase",
-                "G2 phase",
-                "M phase"
-            ],
-            "answerIndex": 1,
-            "explanation": "DNA synthesis (replication) occurs during the S (synthesis) phase of interphase."
+            "question": "A patient’s chart indicates a cardiac output of 7500 mL per minute and a stroke volume of 50 mL. What is the patient’s pulse, in beats per minute?",
+            "choices": ["50", "100", "150", "400"],
+            "answerIndex": 2,
+            "explanation": "Pulse = cardiac output / stroke volume = 7500 mL/min / 50 mL = 150 beats/min."
         },
         {
             "id": "bb-003",
             "topic": "biology_biochemistry",
             "passage": "",
-            "question": "Which of the following amino acids is most likely to be found in the interior of a globular protein in aqueous solution?",
+            "question": "A certain cooperative enzyme has four subunits, two of which are bound to substrate. Which of the following statements can be made?",
             "choices": [
-                "Lysine",
-                "Aspartate",
-                "Valine",
-                "Arginine"
+                "The affinity of the enzyme for the substrate has just increased.",
+                "The affinity of the enzyme for the substrate has just decreased.",
+                "The affinity of the enzyme for the substrate is at the average for this enzyme class.",
+                "The affinity of the enzyme for the substrate is greater than with one substrate bound."
             ],
-            "answerIndex": 2,
-            "explanation": "Valine is nonpolar/hydrophobic and tends to bury in the protein core, away from water. Lysine, aspartate, and arginine are charged and prefer the solvent-exposed surface."
+            "answerIndex": 3,
+            "explanation": "Cooperative enzymes demonstrate a change in affinity for the substrate depending on how many substrate molecules are bound and whether the last change was accomplished because a substrate molecule was bound or left the active site of the enzyme. Because we cannot determine whether the most recent reaction was binding or dissociation, (A) and (B) are eliminated. We can make absolute comparisons though. The unbound enzyme has the lowest affinity for substrate, and the enzyme with all but one subunit bound has the highest. The increase in affinity is not linear, and therefore (C) is not necessarily true. An enzyme with two subunits occupied must have a higher affinity for the substrate than the same enzyme with only one subunit occupied; thus, (D) is correct."
         },
         {
             "id": "cp-001",
             "topic": "chemistry_physics",
             "passage": "",
-            "question": "A 2 kg object accelerates at 3 m/s². What net force acts on it?",
+            "question": "Treating 2-methyl-1-propanol with methylsulfonyl chloride in base, followed by reaction with pyridinium chlorochromate, and a final step in strong acid, will give an end product of:",
             "choices": [
-                "1.5 N",
-                "5 N",
-                "6 N",
-                "9 N"
+                "2-methyl-1-propanol",
+                "2-methylpropanal",
+                "2-methylpropanoic acid",
+                "2-methyl-1-propane"
             ],
-            "answerIndex": 2,
-            "explanation": "By Newton's second law, F = ma = (2 kg)(3 m/s²) = 6 N."
+            "answerIndex": 0,
+            "explanation": "Methylsulfonyl chloride serves as a protecting group for alcohols, which are converted into mesylates. Reacting with this reagent before continuing with what would normally be an oxidation reaction keeps the alcohol from reacting; when the protecting group is then removed using strong acid, the resultant product is the same as the initial reactant. Neither of the oxidation products in choices (B) or (C), nor the reduction product in choice (D), will be formed."
         },
         {
             "id": "cp-002",
             "topic": "chemistry_physics",
             "passage": "",
-            "question": "What is the pH of a solution with a hydrogen ion concentration of 1 × 10⁻³ M?",
-            "choices": [
-                "3",
-                "7",
-                "11",
-                "-3"
-            ],
-            "answerIndex": 0,
-            "explanation": "pH = -log[H⁺] = -log(10⁻³) = 3."
+            "question": "Which of the following amino acids does not have an L-enantiomer?",
+            "choices": ["Cysteine", "Threonine", "Glutamic Acid", "Glycine"],
+            "answerIndex": 3,
+            "explanation": "Glycine’s R group is a hydrogen atom; this amino acid is therefore achiral because the central carbon is not bonded to four different substituents. The other amino acids are all chiral and therefore have both L- and D-enantiomers."
         },
         {
             "id": "cp-003",
             "topic": "chemistry_physics",
             "passage": "",
-            "question": "Which quantum number determines the shape of an atomic orbital?",
+            "question": "During uniform circular motion, which of the following relationships is necessarily true?",
             "choices": [
-                "Principal quantum number (n)",
-                "Azimuthal (angular momentum) quantum number (l)",
-                "Magnetic quantum number (mₗ)",
-                "Spin quantum number (mₛ)"
+                "No work is done.",
+                "The centripetal force does work.",
+                "The velocity does work.",
+                "Potential energy depends on position of the object around the circle."
             ],
-            "answerIndex": 1,
-            "explanation": "The azimuthal quantum number l defines the subshell and therefore the orbital shape (s, p, d, f)."
+            "answerIndex": 0,
+            "explanation": "In uniform circular motion, the object is moving at a constant speed, so the net force is zero and no work is done. The centripetal force is always perpendicular to the velocity, so it does no work. The velocity is always tangent to the circle, so it does no work. The potential energy depends on the position of the object around the circle, so it is not necessarily true."
         },
         {
             "id": "ps-001",
             "topic": "psychology_sociology",
             "passage": "",
-            "question": "According to classical conditioning, a stimulus that naturally triggers a response without prior learning is called the:",
-            "choices": [
-                "Conditioned stimulus",
-                "Unconditioned stimulus",
-                "Neutral stimulus",
-                "Conditioned response"
-            ],
+            "question": "Which component of the nervous system is NOT involved in the initial reflexive response to pain?",
+            "choices": ["Spinal cord", "Cerebral cortex", "Interneuron", "Motor neuron"],
             "answerIndex": 1,
-            "explanation": "An unconditioned stimulus (US) elicits an unconditioned response naturally, without any learning (e.g., food causing salivation)."
+            "explanation": "TODO"
         },
         {
             "id": "ps-002",
             "topic": "psychology_sociology",
             "passage": "",
-            "question": "The tendency to attribute others' behavior to internal characteristics while attributing our own behavior to situational factors is known as the:",
+            "question": "In addition to being a freestanding diagnosis, agoraphobia is most often seen in association with which other psychiatric diagnosis?",
             "choices": [
-                "Self-serving bias",
-                "Just-world hypothesis",
-                "Fundamental attribution error",
-                "Halo effect"
+                "Obsessive–compulsive disorder",
+                "Avoidant personality disorder",
+                "Generalized anxiety disorder",
+                "Panic disorder"
             ],
-            "answerIndex": 2,
-            "explanation": "The fundamental attribution error is overemphasizing dispositional explanations for others' behavior while underemphasizing situational ones."
+            "answerIndex": 3,
+            "explanation": "TODO"
         },
         {
             "id": "ps-003",
             "topic": "psychology_sociology",
             "passage": "",
-            "question": "Which part of the brain is primarily responsible for the formation of new long-term declarative memories?",
-            "choices": [
-                "Amygdala",
-                "Hippocampus",
-                "Cerebellum",
-                "Hypothalamus"
-            ],
-            "answerIndex": 1,
-            "explanation": "The hippocampus is essential for consolidating new declarative (explicit) memories from short-term to long-term storage."
+            "question": "In several species of shrimp, the larger adults will sacrifice themselves to protect the younger, smaller shrimp. How is this behavior best explained?",
+            "choices": ["Inclusive fitness", "Direct benefit", "Sensory bias", "Foraging"],
+            "answerIndex": 0,
+            "explanation": "TODO"
         },
         {
             "id": "cars-001",
             "topic": "cars",
-            "passage": "Some critics argue that the widespread availability of digital reproductions has diminished the aura of original works of art. They contend that when an image can be viewed instantly by anyone, the unique presence that once compelled viewers to travel great distances is lost. Others counter that reproductions democratize access, allowing audiences who could never visit a museum to engage with masterpieces, and that this expanded engagement ultimately deepens appreciation for originals.",
-            "question": "The author's primary purpose in the passage is to:",
+            "passage": "The rich analysis of Fernand Braudel and his fellow Annales historians have made significant contributions to historical theory and research, not the least of which is a broad expansion of potential routes of scholastic analysis. In a departure from traditional approaches, the Annales historians assume that history cannot be limited to a simple recounting of conscious human actions, but must be understood in the context of forces and material conditions that underlie human behavior. Braudel was the first Annales historian to gain widespread support for the idea that history should synthesize data from various social sciences, especially economics, in order to provide a broader view of human societies over time (although Febvre and Bloch, founders of the Annales school, originated this approach). Braudel conceived of history as the dynamic interaction of three temporalities. The first of these, the evenementielle, involved short-lived dramatic “events,” such as battles, revolutions, and the actions of great men, which had preoccupied traditional historians like Carlyle. Conjonctures was Braudel’s term for larger cyclical processes that might last up to half a century. The longue durée, a historical wave of great length, was for Braudel the most fascinating of the three temporalities. Here he focused on those aspects of everyday life that might remain relatively unchanged for centuries. What people ate, what they wore, their means and routes of travel—for Braudel, these things create “structures” that define the limits of potential social change for hundreds of years at a time. Braudel’s concept of the longue durée extended the perspective of historical physical space as well as time. Until the Annales school, historians had generally taken the juridical political unit—the nation-state, duchy, or whatever—as their starting point. Yet, when such enormous timespans are considered, geographical features may well have more significance for human populations than national borders. In his doctoral thesis, a seminal work on the Mediterranean during the reign of Philip II, Braudel treated the geohistory of the entire region as a “structure” that had exerted myriad influences on human lifeways since the first settlements on the shores of the Mediterranean Sea. So, the reader is given such esoteric information as the list of products that came to Spanish shores from North Africa, the seasonal routes followed by Mediterranean sheep and their shepherds, and the cities where the best ship timber could be bought. Braudel has been faulted for the impression of his approach. With his Rabelaisian delight in concrete detail, Braudel vastly extended the realm of relevant phenomena; but this very achievement made it difficult to delimit the boundaries of observation, a task necessary to beginning any social analysis. Indeed, to identify an appropriate scope of work when all options and directions for academic inquiry are available before one’s eyes is a nearly impossible task. Further, Braudel and other Annales historians minimize the differences among the social sciences. Nevertheless, the many similarly designed studies aimed at both professional and popular audiences indicate that Braudel asked significant questions that traditional historians had overlooked.",
+            "question": "The passage suggests that, compared with traditional historians, Annales historians are:",
             "choices": [
-                "Argue that digital reproductions are superior to original artworks.",
-                "Present two opposing views on the effect of reproductions on art.",
-                "Prove that the aura of original works has been permanently destroyed.",
-                "Recommend policies for museum funding."
+                "more interested in other social sciences than in history.",
+                "critical of the achievements of famous historical figures.",
+                "skeptical of the validity of most economic research.",
+                "more interested in the underlying context of human behavior."
             ],
-            "answerIndex": 1,
-            "explanation": "The passage lays out one view (reproductions diminish aura) and a counter-view (reproductions democratize access) without endorsing either, so its purpose is to present two opposing views."
+            "answerIndex": 3,
+            "explanation": "This is an Inference question. Based on the evidence presented in the passage, we should be able to infer a difference between traditional and Annales historians. From our initial analysis, we know that the two are contrasted in paragraph 1, so this is where we will look for clues. The key to the answer is given in the second sentence: “In a departure from traditional approaches, the Annales historians assume that history … must be understood in the context of forces and material conditions that underlie human behavior.” In other words, the Annales historians are more interested in the underlying context of human behavior than traditional historians, as (D) states. (A) Distorts the author’s words: the Annales are interested in incorporating social sciences into historical analysis, but that does not mean that they are more interested in other social sciences than in history— they are historians, after all! (B) is also a Distortion. The Annales historians propose that history is more than just the actions of famous figures, but this doesn’t mean that they are critical of those figure’s achievements. Finally, (C) is an Opposite. Annales historians want to incorporate economic research findings into historical analysis and so should not be skeptical of the validity of such approaches."
         },
         {
             "id": "cars-002",
             "topic": "cars",
-            "passage": "Some critics argue that the widespread availability of digital reproductions has diminished the aura of original works of art. They contend that when an image can be viewed instantly by anyone, the unique presence that once compelled viewers to travel great distances is lost. Others counter that reproductions democratize access, allowing audiences who could never visit a museum to engage with masterpieces, and that this expanded engagement ultimately deepens appreciation for originals.",
-            "question": "Which statement would most strengthen the counterargument described at the end of the passage?",
+            "passage": "The rich analysis of Fernand Braudel and his fellow Annales historians have made significant contributions to historical theory and research, not the least of which is a broad expansion of potential routes of scholastic analysis. In a departure from traditional approaches, the Annales historians assume that history cannot be limited to a simple recounting of conscious human actions, but must be understood in the context of forces and material conditions that underlie human behavior. Braudel was the first Annales historian to gain widespread support for the idea that history should synthesize data from various social sciences, especially economics, in order to provide a broader view of human societies over time (although Febvre and Bloch, founders of the Annales school, originated this approach). Braudel conceived of history as the dynamic interaction of three temporalities. The first of these, the evenementielle, involved short-lived dramatic “events,” such as battles, revolutions, and the actions of great men, which had preoccupied traditional historians like Carlyle. Conjonctures was Braudel’s term for larger cyclical processes that might last up to half a century. The longue durée, a historical wave of great length, was for Braudel the most fascinating of the three temporalities. Here he focused on those aspects of everyday life that might remain relatively unchanged for centuries. What people ate, what they wore, their means and routes of travel—for Braudel, these things create “structures” that define the limits of potential social change for hundreds of years at a time. Braudel’s concept of the longue durée extended the perspective of historical physical space as well as time. Until the Annales school, historians had generally taken the juridical political unit—the nation-state, duchy, or whatever—as their starting point. Yet, when such enormous timespans are considered, geographical features may well have more significance for human populations than national borders. In his doctoral thesis, a seminal work on the Mediterranean during the reign of Philip II, Braudel treated the geohistory of the entire region as a “structure” that had exerted myriad influences on human lifeways since the first settlements on the shores of the Mediterranean Sea. So, the reader is given such esoteric information as the list of products that came to Spanish shores from North Africa, the seasonal routes followed by Mediterranean sheep and their shepherds, and the cities where the best ship timber could be bought. Braudel has been faulted for the impression of his approach. With his Rabelaisian delight in concrete detail, Braudel vastly extended the realm of relevant phenomena; but this very achievement made it difficult to delimit the boundaries of observation, a task necessary to beginning any social analysis. Indeed, to identify an appropriate scope of work when all options and directions for academic inquiry are available before one’s eyes is a nearly impossible task. Further, Braudel and other Annales historians minimize the differences among the social sciences. Nevertheless, the many similarly designed studies aimed at both professional and popular audiences indicate that Braudel asked significant questions that traditional historians had overlooked.",
+            "question": "Which of the following historical phenomena would the author most likely consider an example of the longue durée?",
             "choices": [
-                "Museum attendance has declined as online galleries have grown.",
-                "Visitors who first viewed a work online report a stronger desire to see it in person.",
-                "High-resolution scans are expensive to produce and maintain.",
-                "Most reproductions distort the colors of the original work."
+                "Julius Caesar’s crossing of the Rubicon, which led to a four-year civil war in Rome",
+                "The occurrence in ancient Rome of devastating malaria outbreaks roughly every half-century",
+                "A gradual shift toward a drier Mediterranean climate that lasted from 250 to 600 c.e. and impacted food availability and daily life",
+                "The battle of Carrhae in 53 b.c.e., in which the Parthians exterminated a large Roman army"
+            ],
+            "answerIndex": 2,
+            "explanation": "This is an Apply question of the Example subtype. We must use the author’s description of the longue durée to identify a similar example. Paragraph 2 defines the three temporalities and defines the longue durée as being an “historical wave of great length” on the order of hundreds of years. Only (C) has even remotely that long of a duration, making it the correct answer. (A) and (D) are short-lived events in history just as the evenementielle temporality is defined in the passage. (B) describes a cyclical event that occur[s] … roughly every half-century, which would fit the definition of the conjonctures temporality described in the passage."
+        },
+        {
+            "id": "cars-003",
+            "topic": "cars",
+            "passage": "There is no shortage of evidence for the existence of systemic biases in ordinary human reasoning. For instance, Kahneman and Tversky in their groundbreaking 1974 work proposed the existence of a heuristic—an error-prone shortcut in reasoning—known as “anchoring.” In one of their most notable experiments, participants were exposed to the spin of a roulette wheel (specially rigged to land randomly on one of only two possible results) before being asked to guess what percentage of United Nations member states were African. The half of the sample who had the roulette wheel stop at 65 guessed, on average, that 45 percent of the UN was African, while those with a result of 10 guessed only 25 percent, demonstrating that prior presentation of a random number otherwise unconnected to a quantitative judgment can still influence that judgment. The anchoring effect has been observed on repeated other occasions, such as in Dan Ariely’s experiment that used digits in Social Security numbers as an anchor for bids at an auction, and in the 1996 study by Wilson et al. that showed even awareness of the existence of anchoring bias is insufficient to mitigate its effects. The advertising industry has long been aware of this bias, the rationale for its frequent practice of featuring an “original” price before showing a “sale” price that is invariably reduced. Of course, anchoring is hardly alone among the defective tendencies in human reasoning; other systemic biases have also been experimentally identified, including loss aversion, the availability heuristic, and optimism bias.",
+            "question": "Suppose a consumer who is looking for an inexpensive replacement for her outmoded refrigerator is enticed by a local retailer’s ads for a discount sale promising savings of 50 percent or greater on all appliances. The author would probably warn the consumer that:",
+            "choices": [
+                "sales are scams designed to exploit the consuming public.",
+                "the pre-markdown prices are most likely set artificially high.",
+                "heavily discounted merchandise is likely damaged or stolen.",
+                "making a rational decision about what to buy is impossible."
             ],
             "answerIndex": 1,
-            "explanation": "The counterargument claims reproductions deepen appreciation for originals. Evidence that online viewers become more motivated to see works in person directly supports that claim."
+            "explanation": "The question starts with “suppose” so we are likely dealing with a Reasoning Beyond question. For your Type step, this should lead you to identify Apply as the question type, and given the relative level of difficulty of Apply questions, you may want to consider saving this question for later. Given the long question stem, you might consider skipping the new information in the stem on first read, in order to prioritize determining the task required. Your Rephrase step should result in needing to determine what the author would warn the consumer, which is a type of response. As a result, as you work through the question, you want to be thinking about views that the author holds. The ads for the sale should draw you to paragraph 2, in which the author states: “The advertising industry has long been aware of this bias, the rationale for its frequent practice of featuring an ‘original’ price before showing a ‘sale’ price that is invariably reduced.” Although the author is not explicit, the use of quotation marks here is a case of “scare quotes,” suggesting that the so-called “original” price is just there to make the “sale” price seem lower. Thus, it’s reasonable to infer that the author would warn the consumer about the anchoring effect intended with pre-sale prices. The closest match to this prediction is (B). (A) can be ruled out as a Distortion because the language is too strong. Advice or admonitions that an author would provide should both be consistent with what the author says in the passage and also similar in tone. (D) is also a Distortion because of the word impossible. Finally, (C) is Out of Scope. The author suggests that discounts are offered to manipulate buyers into believing they have found a better deal, not to trick them into buying products that turn out to be faulty."
         }
     ]
 }
