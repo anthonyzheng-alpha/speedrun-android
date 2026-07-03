@@ -35,10 +35,11 @@ A semi-official port of the open source [Anki](https://apps.ankiweb.net/index.ht
 - Add cards by intent from other applications like dictionaries
 - Topic-aware scheduling setting
 - A memory model (measures the probability the user will remember the fact on an exam)
-- A performance model (estimates the chance the user will correctly answer an exam-style question)
-- A readiness model (estimates the approximate MCAT score the user would get based on their current performance in the app)
-- Exam coverage progress
-- Practice exam mode
+  - When reviewing a card, click the three dots in the top right corner of the card and select "Memory model".
+- A performance model (located in the home screen, estimates the chance the user will correctly answer an exam-style question)
+- A readiness model (located in the home screen, estimates the approximate MCAT score the user would get based on their current performance in the app)
+- Exam coverage progress (in the home menu, there are percentages that tell the user the percent of MCAT exam content they have mastered with the cards. There is an overall percentage as well as a breakdown by topic.)
+- Practice exam mode (this mode allows the user to take a practice exam with questions from the MCAT exam content and personalize the content to their needs. Problems derived from Kaplan's MCAT test prep books.)
 
 </div>
 
@@ -132,7 +133,7 @@ Use **`playDebug`** for day-to-day work. It installs as `com.ichi2.anki.debug` (
 
 ### 7. Run on the emulator
 
-**Android Studio:** select the running emulator → click **Run** on the AnkiDroid configuration.
+**Android Studio:** select the running emulator → click **Run** on the AnkiDroid configuration (green play button).
 
 **CLI alternative:**
 
