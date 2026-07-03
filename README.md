@@ -164,3 +164,95 @@ AnkiWeb sync is optional for local testing. Practice exam questions ship from bu
 | `cargo not found` | Install Rust; restart Android Studio from a shell where `cargo` works |
 | Crash on startup (`UnsatisfiedLinkError` / `rsdroid`) | Rebuild the backend for your emulator arch (x86_64 on Windows emulators) |
 | Blue icon instead of red | Wrong build variant — switch to `playDebug` |
+
+
+## Build and install release APK
+
+These steps produce a **distributable release APK** you can install on a real phone or emulator. They differ from the **Run on an Android emulator** section above, which builds a red-icon `playDebug` dev build for day-to-day work.
+
+**Prerequisites:** complete steps 1–4 above (install tools, clone both repos, build the backend once, create `local.properties` with `local_backend=true`).
+
+### 1. Build the backend for all device architectures
+
+The default `build.bat` / `build.sh` on Windows/Linux only compiles **one** Android ABI (x86_64 on Windows), which is fine for emulators but **not** for phones. For a distributable APK, build all four ABIs.
+
+**macOS / Linux (works end-to-end):**
+
+```bash
+export ANDROID_HOME=...          # see step 3 above
+export ANDROID_NDK_VERSION=29.0.14206865
+export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION
+export ALL_ARCHS=1
+export RELEASE=1                 # optional, faster runtime
+./build.sh
+```
+
+**Windows (PowerShell):**
+
+```powershell
+cd speedrun-android-backend
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+$env:ANDROID_NDK_VERSION = "29.0.14206865"
+$env:ANDROID_NDK_HOME = "$env:ANDROID_HOME\ndk\$env:ANDROID_NDK_VERSION"
+$env:PATH += ";C:\msys64\usr\bin"
+$env:ALL_ARCHS = "1"
+.\build.bat
+```
+
+On Windows, `ALL_ARCHS=1` may exit with **"Must be on macOS to do a multi-arch build"** after the Android `jniLibs` are built. That is expected — the Robolectric (host test) library step only runs on macOS, but the four phone/emulator ABIs are already compiled. Assemble the AAR from the built `jniLibs`:
+
+```powershell
+$env:RUNNING_FROM_BUILD_SCRIPT = "1"
+.\gradlew.bat :rsdroid:assembleRelease
+```
+
+Verify `speedrun-android-backend/rsdroid/build/outputs/aar/rsdroid-release.aar` exists and contains `jni/arm64-v8a`, `jni/armeabi-v7a`, `jni/x86`, and `jni/x86_64`.
+
+### 2. Build the release APK
+
+From `speedrun-android/` (with `local_backend=true` in `local.properties`):
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"   # adjust per OS
+.\gradlew.bat clean :AnkiDroid:assembleFullRelease -Duniversal-apk=true
+```
+
+- **Variant:** `fullRelease` — unrestricted GitHub/F-Droid flavor.
+- **Output:** `AnkiDroid/build/outputs/apk/full/release/`
+  - `AnkiDroid-full-universal-release.apk` — install this on any device
+  - Per-ABI split APKs are also produced if you omit `-Duniversal-apk=true`
+- **Signing:** uses `tools/fallback-release-keystore.jks` when `KEYSTOREPATH` is unset (fine for personal/testing). For public distribution, set `KEYSTOREPATH`, `KEYSTOREPWD` (or `KSTOREPWD`), `KEYALIAS`, and `KEYPWD` before building.
+- **Lint:** if `lintVitalFullRelease` fails on pre-existing MCAT string-resource lint errors, skip that gate:
+
+```powershell
+.\gradlew.bat :AnkiDroid:assembleFullRelease -Duniversal-apk=true -x lintVitalFullRelease
+```
+
+### 3. Install on a device or emulator
+
+**Emulator** (after starting an AVD from step 5 above):
+
+```powershell
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+& "$env:ANDROID_HOME\platform-tools\adb.exe" install -r `
+  AnkiDroid\build\outputs\apk\full\release\AnkiDroid-full-universal-release.apk
+```
+
+**Physical phone:**
+
+1. Enable **Install unknown apps** for your file manager or browser (Settings → Apps → Special access).
+2. Copy `AnkiDroid-full-universal-release.apk` to the phone (USB, cloud, or email).
+3. Open the APK and confirm install.
+
+**First launch:** same as step 8 above — tap **Get started**, dismiss optional dialogs, complete permissions, then on the deck picker use **⋮ menu → Do Practice Exam**.
+
+Release builds use the blue icon and package id `com.ichi2.anki` (not the red `playDebug` `.debug` suffix).
+
+### Troubleshooting (release builds)
+
+| Symptom | Fix |
+|---------|-----|
+| `UnsatisfiedLinkError` / `rsdroid` on a real phone | Backend was built x86_64-only; rebuild with all ABIs (step 1) |
+| `ALL_ARCHS` build fails on Windows at Robolectric | Expected; run `gradlew :rsdroid:assembleRelease` with `RUNNING_FROM_BUILD_SCRIPT=1` |
+| `lintVitalFullRelease` fails | Use `-x lintVitalFullRelease` or fix lint in `practice_exam.xml` / related strings |
+| APK won't install (signature conflict) | Uninstall existing AnkiDroid or AnkiDroid debug build first |
