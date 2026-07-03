@@ -12,6 +12,7 @@ import anki.card_rendering.EmptyCardsReport
 import anki.collection.OpChanges
 import anki.decks.SetDeckCollapsedRequest
 import anki.i18n.GeneratedTranslations
+import anki.stats.ExamCoverageResponse
 import anki.stats.ExamMetricsResponse
 import anki.sync.SyncStatusResponse
 import com.ichi2.anki.CollectionManager
@@ -166,6 +167,13 @@ class DeckPickerViewModel :
 
     /** Global performance/readiness metrics for the home screen; null until loaded. */
     val flowOfExamMetrics = MutableStateFlow<ExamMetricsResponse?>(null)
+
+    /** Overall/per-section MCAT exam coverage for the home screen; null until loaded. */
+    val flowOfExamCoverage = MutableStateFlow<ExamCoverageResponse?>(null)
+
+    /** Metrics + coverage paired, so the home screen renders them together. */
+    val flowOfExamInfo =
+        combine(flowOfExamMetrics, flowOfExamCoverage) { metrics, coverage -> metrics to coverage }
 
     /** Flow that determines when the resizing divider should be visible */
     val flowOfResizingDividerVisible =
@@ -394,6 +402,7 @@ class DeckPickerViewModel :
                 flowOfStudiedTodayStats.value = withCol { sched.studiedToday().replace("\n", " ") }
 
                 flowOfExamMetrics.value = withCol { examMetrics() }
+                flowOfExamCoverage.value = withCol { examCoverage() }
 
                 /**
                  * Checks the current scheduler version and prompts the upgrade dialog if using the legacy version.

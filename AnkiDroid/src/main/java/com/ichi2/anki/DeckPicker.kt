@@ -68,6 +68,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import anki.collection.OpChanges
+import anki.stats.ExamCoverageResponse
 import anki.stats.ExamMetricsResponse
 import anki.sync.SyncStatusResponse
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -739,21 +740,28 @@ open class DeckPicker :
             }
         }
 
-        fun onExamMetricsChanged(metrics: ExamMetricsResponse?) {
+        fun onExamInfoChanged(info: Pair<ExamMetricsResponse?, ExamCoverageResponse?>) {
+            val (metrics, coverage) = info
             val view = deckPickerBinding.examMetricsTextView
-            val performance = metrics?.performanceOverall
-            if (metrics == null || performance == null || !performance.hasEnoughData) {
+            // Stay hidden until the metrics have loaded, then always show: either
+            // the numbers, or an honest "not enough data yet" summary.
+            if (metrics == null) {
                 view.isVisible = false
                 return
             }
             view.isVisible = true
+            val performance = metrics.performanceOverall
             view.text =
-                getString(
-                    R.string.exam_metrics_home_summary,
-                    performance.score.roundToInt(),
-                    metrics.readinessOverall.score.roundToInt(),
-                )
-            view.setOnClickListener { showExamMetricsDialog(metrics) }
+                if (performance.hasEnoughData) {
+                    getString(
+                        R.string.exam_metrics_home_summary,
+                        performance.score.roundToInt(),
+                        metrics.readinessOverall.score.roundToInt(),
+                    )
+                } else {
+                    getString(R.string.exam_metrics_home_insufficient)
+                }
+            view.setOnClickListener { showExamMetricsDialog(metrics, coverage) }
         }
 
         fun onCollectionStatusChanged(isInInitialState: Boolean) {
@@ -885,7 +893,7 @@ open class DeckPicker :
         viewModel.flowOfPromptUserToUpdateScheduler.launchCollectionInLifecycleScope(::onPromptUserToUpdateScheduler)
         viewModel.flowOfOptionsMenuState.filterNotNull().launchCollectionInLifecycleScope(::onOptionsMenuUpdated)
         viewModel.flowOfStudiedTodayStats.launchCollectionInLifecycleScope(::onStudiedTodayChanged)
-        viewModel.flowOfExamMetrics.launchCollectionInLifecycleScope(::onExamMetricsChanged)
+        viewModel.flowOfExamInfo.launchCollectionInLifecycleScope(::onExamInfoChanged)
         viewModel.flowOfDeckListInInitialState.filterNotNull().launchCollectionInLifecycleScope(::onCollectionStatusChanged)
         viewModel.flowOfCardsDue.launchCollectionInLifecycleScope(::onCardsDueChanged)
         viewModel.flowOfCollectionHasNoCards.launchCollectionInLifecycleScope(::onStudyOptionsVisibilityChanged)

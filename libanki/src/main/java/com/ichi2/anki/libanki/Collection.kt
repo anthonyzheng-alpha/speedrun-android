@@ -58,6 +58,7 @@ import anki.search.searchNode
 import anki.search.sortOrder
 import anki.stats.CardStatsResponse
 import anki.stats.CardStatsResponse.StatsRevlogEntry
+import anki.stats.ExamCoverageResponse
 import anki.stats.ExamMetricsResponse
 import anki.stats.RecordPracticeExamRequest
 import anki.sync.MediaSyncStatusResponse
@@ -1141,6 +1142,11 @@ class Collection(
     @CheckResult
     @LibAnkiAlias("exam_metrics")
     fun examMetrics(): ExamMetricsResponse = backend.examMetrics()
+
+    /** How much of the MCAT exam has been studied, overall and per section. */
+    @CheckResult
+    @LibAnkiAlias("exam_coverage")
+    fun examCoverage(): ExamCoverageResponse = backend.examCoverage()
 
     /** Persist a completed practice exam so it feeds the performance/readiness metrics. */
     @LibAnkiAlias("record_practice_exam")

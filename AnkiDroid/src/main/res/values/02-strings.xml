@@ -468,6 +468,10 @@ opening the system text to speech settings fails">Failed to open text to speech 
     <string name="exam_metrics_readiness" comment="Label: projected MCAT score">Projected MCAT</string>
     <string name="exam_metrics_confidence_suffix" comment="Confidence percentage; %1$d is the number">%1$d%% confidence</string>
     <string name="exam_metrics_home_summary" comment="Compact home-screen summary; %1$d is performance percent, %2$d the projected MCAT score">Performance %1$d%% \u00b7 Projected MCAT %2$d</string>
-    <string name="exam_metrics_insufficient" comment="Shown when there isn't enough data to estimate performance/readiness">Not enough data yet: study flashcards and take practice exams to get an estimate.</string>
+    <string name="exam_metrics_home_insufficient" comment="Compact home-screen summary shown before there is enough data to predict">Exam readiness: not enough data yet</string>
+    <string name="exam_metrics_insufficient" comment="Shown when there isn't enough data to estimate performance/readiness">Not enough data yet: take a full practice exam (at least 10 questions) in every MCAT topic you\'re studying before a prediction is made.</string>
+    <string name="exam_metrics_performance_explanation" comment="Explains what the performance metric means">Performance is your estimated chance of correctly answering a new, exam-style question \u2014 including ones you have never seen. It is shaped by both your flashcard reviews and your practice exams, with practice exams counting more.</string>
+    <string name="exam_metrics_readiness_explanation" comment="Explains what the readiness metric means">Projected MCAT is the score we\'d expect you to get on the exam right now, derived from your performance across the four sections.</string>
+    <string name="exam_metrics_coverage" comment="How much of the exam has been studied; %1$d is a percent">MCAT studied: %1$d%%</string>
 </resources>
 

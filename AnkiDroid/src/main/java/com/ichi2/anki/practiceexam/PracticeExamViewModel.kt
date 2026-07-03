@@ -3,6 +3,7 @@
 package com.ichi2.anki.practiceexam
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import anki.stats.RecordPracticeExamRequest
@@ -17,7 +18,11 @@ import timber.log.Timber
 class PracticeExamViewModel(
     application: Application,
 ) : AndroidViewModel(application) {
-    private val bank: QuestionBank by lazy { PracticeExamRepository.loadBank(getApplication()) }
+    private val hardcodedBank: QuestionBank by lazy { PracticeExamRepository.loadBank(getApplication()) }
+    private val generatedBank: QuestionBank by lazy { PracticeExamRepository.loadGeneratedBank(getApplication()) }
+
+    private val prefs =
+        application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     var phase: ExamPhase = ExamPhase.CONFIG
         private set
@@ -26,12 +31,34 @@ class PracticeExamViewModel(
     var requestedCount: Int = DEFAULT_QUESTION_COUNT
     val enabledTopics: MutableSet<ExamTopic> = ExamTopic.entries.toMutableSet()
 
+    /** Whether AI-generated problems are included in the pool. Persisted. */
+    var useGenerated: Boolean = prefs.getBoolean(PREF_USE_GENERATED, true)
+        set(value) {
+            field = value
+            prefs.edit().putBoolean(PREF_USE_GENERATED, value).apply()
+        }
+
+    /** True once at least one AI-generated problem is bundled. */
+    val hasGenerated: Boolean
+        get() = generatedBank.questions.isNotEmpty()
+
     var items: List<ExamItem> = emptyList()
         private set
     var currentIndex: Int = 0
         private set
 
-    fun availableCount(): Int = bank.countAvailable(enabledTopics)
+    /** Hardcoded questions, plus generated ones when the toggle is on. */
+    private fun activeBank(): QuestionBank {
+        val questions =
+            if (useGenerated) {
+                hardcodedBank.questions + generatedBank.questions
+            } else {
+                hardcodedBank.questions
+            }
+        return QuestionBank(questions)
+    }
+
+    fun availableCount(): Int = activeBank().countAvailable(enabledTopics)
 
     val currentItem: ExamItem
         get() = items[currentIndex]
@@ -41,7 +68,7 @@ class PracticeExamViewModel(
 
     /** Builds a fresh exam and moves to the in-progress phase. Returns false if empty. */
     fun startExam(): Boolean {
-        val exam = PracticeExamRepository.buildExam(bank, requestedCount, enabledTopics)
+        val exam = PracticeExamRepository.buildExam(activeBank(), requestedCount, enabledTopics)
         if (exam.isEmpty()) return false
         items = exam
         currentIndex = 0
@@ -112,5 +139,7 @@ class PracticeExamViewModel(
 
     companion object {
         const val DEFAULT_QUESTION_COUNT = 5
+        private const val PREFS_NAME = "practice_exam"
+        private const val PREF_USE_GENERATED = "use_generated"
     }
 }

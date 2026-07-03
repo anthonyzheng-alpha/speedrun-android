@@ -74,6 +74,8 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center"
+                        android:paddingStart="96dp"
+                        android:paddingEnd="96dp"
                         android:visibility="gone"/>
 
                 </RelativeLayout>

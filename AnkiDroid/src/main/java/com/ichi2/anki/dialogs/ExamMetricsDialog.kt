@@ -4,6 +4,7 @@ package com.ichi2.anki.dialogs
 
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
+import anki.stats.ExamCoverageResponse
 import anki.stats.ExamMetricsResponse
 import anki.stats.MetricEstimate
 import com.ichi2.anki.R
@@ -16,35 +17,62 @@ import kotlin.math.roundToInt
 /**
  * Shows the global performance (chance of answering a new exam-style question
  * correctly) and readiness (projected MCAT score) metrics, overall and per
- * MCAT section, each with its range/confidence honesty envelope.
+ * MCAT section, each with its range/confidence honesty envelope, plus how much
+ * of the exam has been studied so far (coverage).
  */
-fun Context.showExamMetricsDialog(metrics: ExamMetricsResponse) {
+fun Context.showExamMetricsDialog(
+    metrics: ExamMetricsResponse,
+    coverage: ExamCoverageResponse? = null,
+) {
     AlertDialog.Builder(this).show {
         title(R.string.exam_metrics_title)
-        message(text = buildExamMetricsMessage(this@showExamMetricsDialog, metrics))
+        message(text = buildExamMetricsMessage(this@showExamMetricsDialog, metrics, coverage))
         positiveButton(R.string.dialog_ok)
     }
 }
 
 /**
- * Builds the multi-section body for the metrics dialog. When there isn't enough
- * data, only the honest "not enough data" justification is returned.
+ * Builds the body for the metrics dialog: a short explanation of what each
+ * metric means, the exam-coverage figure, and the performance/readiness
+ * numbers. When there isn't enough data to predict, the explanation and
+ * coverage are still shown alongside the honest "not enough data" note.
  */
 fun buildExamMetricsMessage(
     context: Context,
     metrics: ExamMetricsResponse,
-): CharSequence {
-    val performanceOverall = metrics.performanceOverall
-    if (!performanceOverall.hasEnoughData) {
-        return performanceOverall.justification.ifBlank {
-            context.getString(R.string.exam_metrics_insufficient)
+    coverage: ExamCoverageResponse? = null,
+): CharSequence =
+    buildString {
+        // Always explain what the metrics mean.
+        append(context.getString(R.string.exam_metrics_performance_explanation))
+        append("\n\n")
+        append(context.getString(R.string.exam_metrics_readiness_explanation))
+
+        // Exam coverage, when available.
+        if (coverage != null && coverage.topicsTotal > 0) {
+            append("\n\n")
+            append(
+                context.getString(
+                    R.string.exam_metrics_coverage,
+                    coverage.overallPercent.roundToInt(),
+                ),
+            )
         }
-    }
 
-    val readinessBySection =
-        metrics.readinessSectionsList.associateBy({ it.section }, { it.estimate })
+        val performanceOverall = metrics.performanceOverall
+        append("\n\n")
+        if (!performanceOverall.hasEnoughData) {
+            append(
+                performanceOverall.justification.ifBlank {
+                    context.getString(R.string.exam_metrics_insufficient)
+                },
+            )
+            return@buildString
+        }
 
-    return buildString {
+        val readinessBySection =
+            metrics.readinessSectionsList.associateBy({ it.section }, { it.estimate })
+
         appendBlock(
             context,
             context.getString(R.string.exam_metrics_overall),
@@ -62,7 +90,6 @@ fun buildExamMetricsMessage(
             append(performanceOverall.justification)
         }
     }
-}
 
 /** Appends a "heading / performance / readiness" block for one section. */
 private fun StringBuilder.appendBlock(
