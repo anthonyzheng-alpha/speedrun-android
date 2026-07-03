@@ -48,6 +48,22 @@
                     android:layout_marginTop="4dp"
                     android:textColor="?android:attr/textColorSecondary" />
 
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switch_use_generated"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/practice_exam_use_generated" />
+
+                <TextView
+                    android:id="@+id/generated_warning"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/practice_exam_generated_off_warning"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:visibility="gone" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

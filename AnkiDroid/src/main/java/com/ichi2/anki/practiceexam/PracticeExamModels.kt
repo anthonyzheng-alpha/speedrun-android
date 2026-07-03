@@ -55,6 +55,7 @@ data class ExamItem(
 /** Which screen of the practice exam flow is currently shown. */
 enum class ExamPhase {
     CONFIG,
+    LOADING,
     IN_PROGRESS,
     RESULTS,
 }

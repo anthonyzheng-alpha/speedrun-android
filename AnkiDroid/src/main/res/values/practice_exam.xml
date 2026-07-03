@@ -14,6 +14,13 @@
     <string name="practice_exam_available">%1$d question(s) available for the selected sections. The exam will use %2$d.</string>
     <string name="practice_exam_start">Start exam</string>
     <string name="practice_exam_no_questions">No questions are available for the selected sections.</string>
+    <string name="practice_exam_use_generated">Use AI-generated problems</string>
+    <string name="practice_exam_generated_off_warning">AI-generated problems are off. You\'ll see fewer, less varied questions drawn only from the hardcoded bank.</string>
+    <string name="practice_exam_available_generated">%1$d question(s) will be generated fresh with AI when you start. This may take a moment.</string>
+    <string name="practice_exam_generating">Generating your exam\u2026</string>
+    <string name="practice_exam_ai_unavailable_no_key">AI generation isn\'t configured, so this exam uses the bundled question bank.</string>
+    <string name="practice_exam_ai_failed">Couldn\'t generate questions right now, so this exam uses the bundled question bank.</string>
+    <string name="practice_exam_ai_partial">Only some questions could be generated; the rest come from the bundled question bank.</string>
 
     <string name="practice_exam_progress">Question %1$d of %2$d</string>
     <string name="practice_exam_back">Back</string>

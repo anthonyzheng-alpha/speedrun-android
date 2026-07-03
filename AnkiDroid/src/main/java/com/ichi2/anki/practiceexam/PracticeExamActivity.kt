@@ -9,11 +9,12 @@ import android.widget.RadioGroup
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.materialswitch.MaterialSwitch
 import com.ichi2.anki.AnkiActivity
 import com.ichi2.anki.R
 import com.ichi2.anki.common.utils.android.showThemedToast
 import com.ichi2.anki.databinding.ActivityPracticeExamBinding
+import com.ichi2.anki.launchCatchingTask
+import com.ichi2.anki.withProgress
 
 /**
  * Hosts the MCAT practice exam flow: configure the exam, answer the questions
@@ -73,15 +74,60 @@ class PracticeExamActivity : AnkiActivity() {
             }
         }
 
+        binding.switchUseGenerated.isChecked = viewModel.useGenerated
+        binding.switchUseGenerated.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.useGenerated = isChecked
+            updateGeneratedWarning()
+            updateAvailability()
+        }
+        updateGeneratedWarning()
+
         binding.startButton.setOnClickListener {
-            val parsed = binding.countInput.text?.toString()?.toIntOrNull()
+            val parsed =
+                binding.countInput.text
+                    ?.toString()
+                    ?.toIntOrNull()
             if (parsed != null) {
                 viewModel.requestedCount = parsed.coerceAtLeast(1)
             }
-            if (viewModel.startExam()) {
-                render()
-            } else {
-                showThemedToast(this, getString(R.string.practice_exam_no_questions), false)
+            launchCatchingTask {
+                val result =
+                    withProgress(getString(R.string.practice_exam_generating)) {
+                        viewModel.startExamAsync()
+                    }
+                when (result) {
+                    ExamStartResult.NONE ->
+                        showThemedToast(
+                            this@PracticeExamActivity,
+                            getString(R.string.practice_exam_no_questions),
+                            false,
+                        )
+                    ExamStartResult.GENERATED, ExamStartResult.HARDCODED -> render()
+                    ExamStartResult.FALLBACK_NO_KEY -> {
+                        render()
+                        showThemedToast(
+                            this@PracticeExamActivity,
+                            getString(R.string.practice_exam_ai_unavailable_no_key),
+                            true,
+                        )
+                    }
+                    ExamStartResult.FALLBACK_FAILED -> {
+                        render()
+                        showThemedToast(
+                            this@PracticeExamActivity,
+                            getString(R.string.practice_exam_ai_failed),
+                            true,
+                        )
+                    }
+                    ExamStartResult.GENERATED_PARTIAL -> {
+                        render()
+                        showThemedToast(
+                            this@PracticeExamActivity,
+                            getString(R.string.practice_exam_ai_partial),
+                            true,
+                        )
+                    }
+                }
             }
         }
     }
@@ -103,19 +149,32 @@ class PracticeExamActivity : AnkiActivity() {
 
     private fun updateAvailability() {
         val available = viewModel.availableCount()
-        val effective = viewModel.requestedCount.coerceAtMost(available)
-        binding.availableLabel.text =
-            getString(R.string.practice_exam_available, available, effective)
-        binding.startButton.isEnabled = available > 0
+        if (viewModel.useGenerated) {
+            binding.availableLabel.text =
+                getString(R.string.practice_exam_available_generated, viewModel.requestedCount)
+        } else {
+            val effective = viewModel.requestedCount.coerceAtMost(available)
+            binding.availableLabel.text =
+                getString(R.string.practice_exam_available, available, effective)
+        }
+        binding.startButton.isEnabled =
+            viewModel.enabledTopics.isNotEmpty() && (viewModel.useGenerated || available > 0)
+    }
+
+    private fun updateGeneratedWarning() {
+        binding.generatedWarning.visibility = visibleIf(!viewModel.useGenerated)
     }
 
     private fun render() {
-        binding.configView.visibility = visibleIf(viewModel.phase == ExamPhase.CONFIG)
-        binding.questionView.visibility = visibleIf(viewModel.phase == ExamPhase.IN_PROGRESS)
-        binding.resultsView.visibility = visibleIf(viewModel.phase == ExamPhase.RESULTS)
+        val phase = viewModel.phase
+        binding.configView.visibility =
+            visibleIf(phase == ExamPhase.CONFIG || phase == ExamPhase.LOADING)
+        binding.questionView.visibility = visibleIf(phase == ExamPhase.IN_PROGRESS)
+        binding.resultsView.visibility = visibleIf(phase == ExamPhase.RESULTS)
 
-        when (viewModel.phase) {
+        when (phase) {
             ExamPhase.CONFIG -> updateAvailability()
+            ExamPhase.LOADING -> {}
             ExamPhase.IN_PROGRESS -> renderQuestion()
             ExamPhase.RESULTS -> renderResults()
         }

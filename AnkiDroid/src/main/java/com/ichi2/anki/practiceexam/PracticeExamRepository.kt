@@ -7,17 +7,44 @@ import org.json.JSONObject
 import timber.log.Timber
 
 /**
- * Loads the hardcoded MCAT question bank from assets and assembles randomised
- * practice exams from it. No questions are generated: everything comes from
- * `assets/practice_exam/questions.json`, which can be edited by hand.
+ * Loads the MCAT question banks from assets and assembles randomised practice
+ * exams. Problems are never generated on-device: the hardcoded bank lives at
+ * `assets/practice_exam/questions.json` (hand-editable) and the AI-generated,
+ * pre-vetted bank at `assets/practice_exam/generated-questions.json` (produced
+ * offline by tools/generate_practice_problems.mjs).
  */
 object PracticeExamRepository {
     private const val ASSET_PATH = "practice_exam/questions.json"
+    private const val GENERATED_ASSET_PATH = "practice_exam/generated-questions.json"
 
-    /** Reads and parses the question bank. Malformed entries are skipped. */
-    fun loadBank(context: Context): QuestionBank {
+    /** Reads and parses the hardcoded question bank. Malformed entries are skipped. */
+    fun loadBank(context: Context): QuestionBank = readBank(context, ASSET_PATH)
+
+    /**
+     * Reads the AI-generated bank. Returns an empty bank if the asset is missing
+     * or empty (e.g. before the generator has been run).
+     */
+    fun loadGeneratedBank(context: Context): QuestionBank = readBank(context, GENERATED_ASSET_PATH)
+
+    private fun readBank(
+        context: Context,
+        assetPath: String,
+    ): QuestionBank {
         val raw =
-            context.assets.open(ASSET_PATH).bufferedReader().use { it.readText() }
+            try {
+                context.assets
+                    .open(assetPath)
+                    .bufferedReader()
+                    .use { it.readText() }
+            } catch (e: Exception) {
+                Timber.w(e, "Could not read question bank asset: %s", assetPath)
+                return QuestionBank(emptyList())
+            }
+        return parseBank(raw)
+    }
+
+    /** Parses a `{ questions: [...] }` bank string. Malformed entries are skipped. */
+    fun parseBank(raw: String): QuestionBank {
         val root = JSONObject(raw)
         val array = root.optJSONArray("questions") ?: return QuestionBank(emptyList())
 

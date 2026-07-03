@@ -12,6 +12,31 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
+ * The outcome of assembling an exam, so the UI can tell the user when the AI
+ * toggle was on but questions ended up coming (wholly or partly) from the
+ * bundled bank instead of live generation.
+ */
+enum class ExamStartResult {
+    /** All questions generated + verified live. */
+    GENERATED,
+
+    /** Some live questions, topped up from the bundled bank. */
+    GENERATED_PARTIAL,
+
+    /** AI on but no key configured; used the bundled bank. */
+    FALLBACK_NO_KEY,
+
+    /** AI on with a key, but generation produced nothing; used the bundled bank. */
+    FALLBACK_FAILED,
+
+    /** AI off; used the bundled bank as requested. */
+    HARDCODED,
+
+    /** No questions could be assembled at all. */
+    NONE,
+}
+
+/**
  * Holds the state of a practice exam across configuration changes: the chosen
  * settings, the current set of questions, and which question is being shown.
  */
@@ -66,15 +91,66 @@ class PracticeExamViewModel(
     val isLastQuestion: Boolean
         get() = currentIndex == items.size - 1
 
-    /** Builds a fresh exam and moves to the in-progress phase. Returns false if empty. */
-    fun startExam(): Boolean {
-        val exam = PracticeExamRepository.buildExam(activeBank(), requestedCount, enabledTopics)
-        if (exam.isEmpty()) return false
-        items = exam
+    /**
+     * Builds a fresh exam and moves to the in-progress phase. When AI generation
+     * is on, questions are generated + verified live (falling back to / topping
+     * up from the bundled banks); otherwise the bundled banks are used directly.
+     * The returned [ExamStartResult] reports which source was used so the UI can
+     * surface silent fallbacks; [ExamStartResult.NONE] means nothing could be
+     * assembled.
+     */
+    suspend fun startExamAsync(): ExamStartResult {
+        phase = ExamPhase.LOADING
+
+        if (!useGenerated) {
+            return finishStart(pickFromBank(requestedCount), ExamStartResult.HARDCODED)
+        }
+        if (!PracticeExamGenerator.isConfigured) {
+            Timber.w("AI generation requested but no key configured; using bundled questions")
+            return finishStart(pickFromBank(requestedCount), ExamStartResult.FALLBACK_NO_KEY)
+        }
+
+        val live =
+            try {
+                PracticeExamGenerator.generate(requestedCount, enabledTopics)
+            } catch (e: Exception) {
+                Timber.w(e, "live generation failed; using bundled questions")
+                emptyList()
+            }
+
+        return when {
+            live.isEmpty() -> finishStart(pickFromBank(requestedCount), ExamStartResult.FALLBACK_FAILED)
+            live.size < requestedCount -> {
+                val haveIds = live.map { it.id }.toSet()
+                val topped = live + pickFromBank(requestedCount - live.size).filter { it.id !in haveIds }
+                finishStart(topped, ExamStartResult.GENERATED_PARTIAL)
+            }
+            else -> finishStart(live, ExamStartResult.GENERATED)
+        }
+    }
+
+    /**
+     * Moves the assembled [questions] into the in-progress phase and reports
+     * [result], or returns [ExamStartResult.NONE] (staying on config) when empty.
+     */
+    private fun finishStart(
+        questions: List<PracticeQuestion>,
+        result: ExamStartResult,
+    ): ExamStartResult {
+        val built = questions.map { ExamItem(it) }
+        if (built.isEmpty()) {
+            phase = ExamPhase.CONFIG
+            return ExamStartResult.NONE
+        }
+        items = built
         currentIndex = 0
         phase = ExamPhase.IN_PROGRESS
-        return true
+        return result
     }
+
+    /** Random questions from the bundled banks (respecting the generated toggle). */
+    private fun pickFromBank(n: Int): List<PracticeQuestion> =
+        PracticeExamRepository.buildExam(activeBank(), n, enabledTopics).map { it.question }
 
     fun selectAnswer(choiceIndex: Int) {
         items[currentIndex].selectedIndex = choiceIndex
