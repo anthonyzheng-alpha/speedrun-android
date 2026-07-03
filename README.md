@@ -14,7 +14,7 @@
 <a href="https://github.com/ankidroid/Anki-Android/blob/main/COPYING"><img src="https://img.shields.io/github/license/ankidroid/Anki-Android" alt="license"/></a>
 
 # AnkiDroid
-A semi-official port of the open source [Anki](https://apps.ankiweb.net/index.html) spaced repetition flashcard system to Android. Memorize anything with AnkiDroid!
+A semi-official port of the open source [Anki](https://apps.ankiweb.net/index.html) spaced repetition flashcard system to Android. Memorize anything with AnkiDroid! Specifically designed for MCAT exam preparation.
 
 <img src="docs/graphics/logos/ankidroid_logo.png" align="right" width="40%" height="100%"></img>
 
@@ -33,88 +33,133 @@ A semi-official port of the open source [Anki](https://apps.ankiweb.net/index.ht
 - Spaced repetition (AI-optimized [FSRS algorithm](https://github.com/open-spaced-repetition))
 - Supported contents: text, images, sounds, MathJax
 - Add cards by intent from other applications like dictionaries
+- Topic-aware scheduling setting
+- A memory model (measures the probability the user will remember the fact on an exam)
+- A performance model (estimates the chance the user will correctly answer an exam-style question)
+- A readiness model (estimates the approximate MCAT score the user would get based on their current performance in the app)
+- Exam coverage progress
+- Practice exam mode
 
 </div>
 
-Install
----------
-<div style="display:flex;">
+Run on an Android emulator
+--------------------------
 
-<a href="https://play.google.com/store/apps/details?id=com.ichi2.anki&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
-    <img alt="Get it on Google Play" height="80"
-        src="docs/graphics/logos/google-badge.png" /></a>
+This app requires **two sibling repositories**. Gradle hard-codes the backend folder name, so your checkout must look like:
 
-<a href="https://f-droid.org/repository/browse/?fdid=com.ichi2.anki">
-    <img alt="Get it on F-Droid" height="80"
-        src="docs/graphics/logos/f-droid-badge.png"></a>
-
-<a href="http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/ankidroid/Anki-Android">
-    <img alt="Get it on Obtainium" height="80"
-        src="https://github.com/user-attachments/assets/713d71c5-3dec-4ec4-a3f2-8d28d025a9c6"/></a>
-
-</div>
-
-Signing certificate fingerprint to [verify](https://developer.android.com/studio/command-line/apksigner#usage-verify) the APK:
 ```
-SHA-256: 2071534f0f4b5e54ae952dd275d70da6e3459ee69909d2ab1b4843c4c5b21a45 
-SHA-1: f24e06a3657b190a12671100402df32d7b9b3d36
+parent-folder/
+  speedrun-android/          ← this repo (Kotlin UI)
+  speedrun-android-backend/  ← MCAT Rust backend (exact name required)
 ```
 
-Wiki
-----
-View [Wiki](https://github.com/ankidroid/Anki-Android/wiki)
+The desktop [speedrun](https://github.com/anthonyzheng-alpha/speedrun) repo is not required for Android.
 
-Help
-----
-Check the [user manual](https://docs.ankidroid.org/) and the wiki for usage instructions. See the [help page](https://docs.ankidroid.org/help.html) 
-for how to submit a bug report or contact a project member, etc.
+### 1. Install tools (one-time)
 
-Contribute
-----------
-You can contribute to AnkiDroid by beta testing, translating, or submitting code. 
-See the [contribution wiki page](https://github.com/ankidroid/Anki-Android/wiki/Contributing) for more info.
+| Tool | Notes |
+|------|-------|
+| [Android Studio](https://developer.android.com/studio) | Must support AGP 9.0.1 (see `gradle/libs.versions.toml`) |
+| **JDK 21** | Set in **Settings → Build Tools → Gradle → Gradle JDK**. Do not rely on system Java 8 on PATH. |
+| **Android SDK 36** | Install via SDK Manager |
+| **NDK 29.0.14206865** | SDK Manager → SDK Tools → show package details |
+| **Rust** ([rustup.rs](https://rustup.rs/)) | Required to build the backend |
+| **msys2** (Windows only) | `pacman -S git rsync`; add `C:\msys64\usr\bin` to PATH when building the backend |
 
-Join Us On
-----------
+### 2. Clone both repos side by side
 
-<a href="https://discord.gg/qjzcRTx"><img src="docs/graphics/logos/discord_logo_color.svg" height="46px"/></a>
-<a href="https://www.reddit.com/r/Anki"><img src="docs/graphics/logos/reddit_logo_color.png" height="50px"/></a>
-<a href="https://www.facebook.com/AnkiDroid/"><img src="docs/graphics/logos/facebook_logo_color.png" height="50px"/></a>
-<a href="https://x.com/ankidroid"><img src="docs/graphics/logos/twitter_logo.png" height="50px"/></a>
-<a href="https://forums.ankiweb.net/"><img src="/docs/graphics/logos/anki_forums_logo.png" height="50px"/></a>
+```powershell
+mkdir alphaai
+cd alphaai
+git clone https://github.com/anthonyzheng-alpha/speedrun-android speedrun-android
+git clone --recurse-submodules https://github.com/anthonyzheng-alpha/speedrun-android-backend speedrun-android-backend
+```
 
-## Credits
-<!--- Do not rename this section. AnkiDroid contains a deep link to the section
-header - see https://github.com/ankidroid/Anki-Android/pull/11803 --->
+If you already cloned the backend without submodules:
 
-### Code Contributors
+```powershell
+cd speedrun-android-backend
+git submodule update --init --recursive
+```
 
-Thanks to these awesome code contributors who keep this project going
+See [speedrun-android-backend](https://github.com/anthonyzheng-alpha/speedrun-android-backend) for backend-specific build details.
 
-<a href="https://github.com/ankidroid/Anki-Android/graphs/contributors"><img src="https://opencollective.com/ankidroid/contributors.svg?width=890&button=false" /></a>
+### 3. Build the backend (first time, ~30–60 min)
 
-### [Sponsors](https://opencollective.com/ankidroid#sponsor)
-<a href="https://opencollective.com/ankidroid#sponsor" target="_blank">
-  <img alt="AnkiDroid Sponsors" src="https://opencollective.com/Ankidroid/sponsors.svg?width=890" />
-</a>
+**Windows (PowerShell):**
 
-### [Backers](https://opencollective.com/ankidroid#backer)
+```powershell
+cd speedrun-android-backend
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+$env:ANDROID_NDK_VERSION = "29.0.14206865"
+$env:ANDROID_NDK_HOME = "$env:ANDROID_HOME\ndk\$env:ANDROID_NDK_VERSION"
+$env:PATH += ";C:\msys64\usr\bin"
+.\build.bat
+```
 
-A big thank you to each of our backers 🙏
-<a href="https://opencollective.com/Ankidroid#backers" target="_blank"><img width=110 src="https://opencollective.com/Ankidroid/backers/badge.svg?"></a>
+**macOS / Linux:** set the same `ANDROID_HOME`, `ANDROID_NDK_VERSION`, and `ANDROID_NDK_HOME`, then run `./build.sh`.
 
-<p>Your generous donations mean the world to us, and we can't express our gratitude enough. Your support fuels our mission and helps us make a real difference</p>
+This must produce `speedrun-android-backend/rsdroid/build/outputs/aar/rsdroid-release.aar`. Rebuild the backend whenever MCAT Rust code changes.
 
-<a href="https://opencollective.com/Ankidroid/donate" target="_blank">
-  <img alt="Donate to AnkiDroid" src="https://opencollective.com/Ankidroid/donate/button@2x.png?color=blue" width=200 />
-</a>
+### 4. Create `local.properties`
 
-### [Translators](https://crowdin.com/project/ankidroid/activity-stream)
+Copy [`local.properties.example`](local.properties.example) to `local.properties` at the repo root (this file is gitignored). At minimum:
 
-Thanks to our 1400 translators, for allowing us to be available, partially or totally, in 99 languages as of July 2022.
+```properties
+sdk.dir=C:/Users/<you>/AppData/Local/Android/Sdk
+local_backend=true
+enable_coverage=false
+enable_languages=false
+```
 
-License
--------
-* [GPL-3.0 License](https://github.com/ankidroid/Anki-Android/blob/main/COPYING)
-* [AGPL-3.0 License](https://github.com/ankitects/anki/blob/main/LICENSE) for some part of the back-end
-* [LGPL-3.0 License](https://github.com/ankidroid/Anki-Android/blob/main/api/COPYING.LESSER) for the AnkiDroid API
+- `local_backend=true` is **required** for MCAT features (practice exam recording, memory/readiness models, topic-aware scheduling, etc.).
+- `local_backend=false` uses the upstream Maven backend and will **not** include this fork's Rust changes.
+
+### 5. Create and start an emulator (one-time)
+
+1. Android Studio → **Device Manager** → **Create Virtual Device**
+2. Pick a Pixel profile
+3. System image: **x86_64**, API **34–36** (Windows; use arm64 on Apple Silicon Macs)
+4. Start the AVD and wait for the home screen before deploying
+
+### 6. Open the project and select the build variant
+
+1. **File → Open** → the `speedrun-android` repo root (not the `AnkiDroid` subfolder)
+2. Wait for Gradle sync (fails if the AAR is missing — rebuild the backend, step 3)
+3. **View → Tool Windows → Build Variants** → set `:AnkiDroid` to **`playDebug`**
+
+Use **`playDebug`** for day-to-day work. It installs as `com.ichi2.anki.debug` (red icon) and avoids building `amazonDebug` in parallel, which can cause Kotlin out-of-memory errors on first build. Do not use `./gradlew assembleDebug` for routine development.
+
+### 7. Run on the emulator
+
+**Android Studio:** select the running emulator → click **Run** on the AnkiDroid configuration.
+
+**CLI alternative:**
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"   # adjust per OS
+cd speedrun-android
+.\gradlew installPlayDebug
+```
+
+The first build can take 10–20+ minutes; incremental rebuilds are much faster.
+
+### 8. First launch
+
+1. Tap **Get started** on the intro screen
+2. Dismiss optional dialogs (e.g. backup prompt → **Later**)
+3. Complete permissions / storage setup
+4. On the deck picker: **⋮ menu → Do Practice Exam**
+
+AnkiWeb sync is optional for local testing. Practice exam questions ship from bundled assets in `AnkiDroid/src/main/assets/practice_exam/questions.json`.
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| Gradle can't find `rsdroid-release.aar` | Build the backend (step 3); confirm the sibling folder is named `speedrun-android-backend` |
+| Kotlin OOM during build | Use `playDebug` only; ensure `gradle.properties` has `kotlin.daemon.jvmargs=-Xmx6144M` |
+| Wrong Java version | Set Gradle JDK to 21 in Android Studio |
+| `cargo not found` | Install Rust; restart Android Studio from a shell where `cargo` works |
+| Crash on startup (`UnsatisfiedLinkError` / `rsdroid`) | Rebuild the backend for your emulator arch (x86_64 on Windows emulators) |
+| Blue icon instead of red | Wrong build variant — switch to `playDebug` |

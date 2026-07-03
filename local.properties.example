@@ -1,0 +1,12 @@
+# Copy this file to local.properties and adjust sdk.dir for your machine.
+# local.properties is gitignored and must not be committed.
+
+# Path to the Android SDK (Android Studio usually creates this on first open).
+sdk.dir=C:/Users/<you>/AppData/Local/Android/Sdk
+
+# Required for MCAT features: load the locally built AAR from ../speedrun-android-backend/
+local_backend=true
+
+# Optional: faster debug builds
+enable_coverage=false
+enable_languages=false
