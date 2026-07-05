@@ -6,8 +6,9 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import anki.collection.opChanges
 import anki.stats.RecordPracticeExamRequest
-import com.ichi2.anki.CollectionManager.withCol
+import com.ichi2.anki.observability.undoableOp
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -165,12 +166,16 @@ class PracticeExamViewModel(
     }
 
     /** Advances to the next question, or moves to results if on the last one. */
-    fun advance() {
+    fun advance(onComplete: () -> Unit = {}) {
         if (currentIndex < items.size - 1) {
             currentIndex += 1
+            onComplete()
         } else {
-            phase = ExamPhase.RESULTS
-            persistResults()
+            viewModelScope.launch {
+                persistResults()
+                phase = ExamPhase.RESULTS
+                onComplete()
+            }
         }
     }
 
@@ -178,7 +183,7 @@ class PracticeExamViewModel(
      * Save the completed exam's per-topic results so they feed the
      * performance/readiness metrics. Failures are non-fatal.
      */
-    private fun persistResults() {
+    private suspend fun persistResults() {
         val results =
             scoreByTopic().map { (topic, tally) ->
                 RecordPracticeExamRequest.TopicResult
@@ -189,12 +194,13 @@ class PracticeExamViewModel(
                     .build()
             }
         if (results.isEmpty()) return
-        viewModelScope.launch {
-            try {
-                withCol { recordPracticeExam(results) }
-            } catch (e: Exception) {
-                Timber.w(e, "failed to record practice exam")
+        try {
+            undoableOp(handler = this) {
+                recordPracticeExam(results)
+                opChanges { config = true }
             }
+        } catch (e: Exception) {
+            Timber.w(e, "failed to record practice exam")
         }
     }
 

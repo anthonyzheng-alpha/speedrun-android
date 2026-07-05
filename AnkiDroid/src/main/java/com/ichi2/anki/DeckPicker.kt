@@ -343,6 +343,14 @@ open class DeckPicker :
             },
         )
 
+    private val practiceExamLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            DeckPickerActivityResultCallback {
+                updateDeckList()
+            },
+        )
+
     private val showNewVersionInfoLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
@@ -561,7 +569,7 @@ open class DeckPicker :
         // home screen (also available from the overflow menu).
         deckPickerBinding.practiceButton.setOnClickListener {
             Timber.i("DeckPicker:: Practice button pressed")
-            startActivity(Intent(this, PracticeExamActivity::class.java))
+            practiceExamLauncher.launch(Intent(this, PracticeExamActivity::class.java))
         }
         // Setup the FloatingActionButtons
         floatingActionMenu =
@@ -1415,7 +1423,7 @@ open class DeckPicker :
             }
             R.id.action_practice_exam -> {
                 Timber.i("DeckPicker:: Practice exam button pressed")
-                startActivity(Intent(this, PracticeExamActivity::class.java))
+                practiceExamLauncher.launch(Intent(this, PracticeExamActivity::class.java))
                 return true
             }
             R.id.action_import -> {
@@ -2433,7 +2441,7 @@ open class DeckPicker :
         handler: Any?,
     ) {
         lifecycleScope.launch { viewModel.refreshMenuState() }
-        if (changes.studyQueues && handler !== this && handler !== viewModel) {
+        if ((changes.studyQueues || changes.config) && handler !== this && handler !== viewModel) {
             if (!activityPaused) {
                 // No need to update while the activity is paused, because `onResume` calls `refreshState` that calls `updateDeckList`.
                 updateDeckList()

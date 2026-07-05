@@ -138,8 +138,7 @@ class PracticeExamActivity : AnkiActivity() {
             render()
         }
         binding.nextButton.setOnClickListener {
-            viewModel.advance()
-            render()
+            viewModel.advance { render() }
         }
         binding.retakeButton.setOnClickListener {
             viewModel.retake()
