@@ -68,8 +68,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import anki.collection.OpChanges
-import anki.stats.ExamCoverageResponse
-import anki.stats.ExamMetricsResponse
 import anki.sync.SyncStatusResponse
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -115,6 +113,7 @@ import com.ichi2.anki.deckpicker.DeckPickerViewModel.AnkiDroidEnvironment
 import com.ichi2.anki.deckpicker.DeckPickerViewModel.FlattenedDeckList
 import com.ichi2.anki.deckpicker.DeckPickerViewModel.StartupResponse
 import com.ichi2.anki.deckpicker.EmptyCardsResult
+import com.ichi2.anki.deckpicker.ExamInfo
 import com.ichi2.anki.deckpicker.OptionsMenuState
 import com.ichi2.anki.deckpicker.ShortcutData
 import com.ichi2.anki.deckpicker.SyncIconState
@@ -740,8 +739,8 @@ open class DeckPicker :
             }
         }
 
-        fun onExamInfoChanged(info: Pair<ExamMetricsResponse?, ExamCoverageResponse?>) {
-            val (metrics, coverage) = info
+        fun onExamInfoChanged(info: ExamInfo) {
+            val metrics = info.metrics
             val view = deckPickerBinding.examMetricsTextView
             // Stay hidden until the metrics have loaded, then always show: either
             // the numbers, or an honest "not enough data yet" summary.
@@ -761,7 +760,14 @@ open class DeckPicker :
                 } else {
                     getString(R.string.exam_metrics_home_insufficient)
                 }
-            view.setOnClickListener { showExamMetricsDialog(metrics, coverage) }
+            view.setOnClickListener {
+                showExamMetricsDialog(
+                    metrics = metrics,
+                    coverage = info.coverage,
+                    examDateSecs = info.examDateSecs,
+                    onExamDatePicked = { secs -> viewModel.setExamDate(secs) },
+                )
+            }
         }
 
         fun onCollectionStatusChanged(isInInitialState: Boolean) {

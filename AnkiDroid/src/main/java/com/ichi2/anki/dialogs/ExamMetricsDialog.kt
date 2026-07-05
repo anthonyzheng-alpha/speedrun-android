@@ -2,33 +2,74 @@
 
 package com.ichi2.anki.dialogs
 
+import android.app.DatePickerDialog
 import android.content.Context
+import android.text.format.DateFormat
 import androidx.appcompat.app.AlertDialog
 import anki.stats.ExamCoverageResponse
 import anki.stats.ExamMetricsResponse
 import anki.stats.MetricEstimate
 import com.ichi2.anki.R
 import com.ichi2.utils.message
+import com.ichi2.utils.neutralButton
 import com.ichi2.utils.positiveButton
 import com.ichi2.utils.show
 import com.ichi2.utils.title
+import java.util.Calendar
+import java.util.Date
 import kotlin.math.roundToInt
 
 /**
  * Shows the global performance (chance of answering a new exam-style question
  * correctly) and readiness (projected MCAT score) metrics, overall and per
  * MCAT section, each with its range/confidence honesty envelope, plus how much
- * of the exam has been studied so far (coverage).
+ * of the exam has been studied so far (coverage) and the target exam date the
+ * metrics are projected to.
  */
 fun Context.showExamMetricsDialog(
     metrics: ExamMetricsResponse,
     coverage: ExamCoverageResponse? = null,
+    examDateSecs: Long? = null,
+    onExamDatePicked: ((Long) -> Unit)? = null,
 ) {
     AlertDialog.Builder(this).show {
         title(R.string.exam_metrics_title)
-        message(text = buildExamMetricsMessage(this@showExamMetricsDialog, metrics, coverage))
+        message(
+            text = buildExamMetricsMessage(this@showExamMetricsDialog, metrics, coverage, examDateSecs),
+        )
         positiveButton(R.string.dialog_ok)
+        if (onExamDatePicked != null) {
+            neutralButton(R.string.exam_metrics_set_exam_date) {
+                this@showExamMetricsDialog.showExamDatePicker(examDateSecs, onExamDatePicked)
+            }
+        }
     }
+}
+
+/** Opens a date picker (seeded with the current exam date) and reports the
+ * chosen day back as a unix timestamp in seconds at local midnight. */
+private fun Context.showExamDatePicker(
+    currentSecs: Long?,
+    onPicked: (Long) -> Unit,
+) {
+    val seed = Calendar.getInstance()
+    if (currentSecs != null && currentSecs > 0) {
+        seed.timeInMillis = currentSecs * 1000L
+    }
+    DatePickerDialog(
+        this,
+        { _, year, month, dayOfMonth ->
+            val picked =
+                Calendar.getInstance().apply {
+                    clear()
+                    set(year, month, dayOfMonth)
+                }
+            onPicked(picked.timeInMillis / 1000L)
+        },
+        seed.get(Calendar.YEAR),
+        seed.get(Calendar.MONTH),
+        seed.get(Calendar.DAY_OF_MONTH),
+    ).show()
 }
 
 /**
@@ -41,12 +82,22 @@ fun buildExamMetricsMessage(
     context: Context,
     metrics: ExamMetricsResponse,
     coverage: ExamCoverageResponse? = null,
+    examDateSecs: Long? = null,
 ): CharSequence =
     buildString {
         // Always explain what the metrics mean.
         append(context.getString(R.string.exam_metrics_performance_explanation))
         append("\n\n")
         append(context.getString(R.string.exam_metrics_readiness_explanation))
+
+        // Target exam date the metrics are projected to.
+        append("\n\n")
+        if (examDateSecs != null && examDateSecs > 0) {
+            val dateStr = DateFormat.getDateFormat(context).format(Date(examDateSecs * 1000L))
+            append(context.getString(R.string.exam_metrics_exam_date, dateStr))
+        } else {
+            append(context.getString(R.string.exam_metrics_exam_date_unset))
+        }
 
         // Exam coverage, when available.
         if (coverage != null && coverage.topicsTotal > 0) {

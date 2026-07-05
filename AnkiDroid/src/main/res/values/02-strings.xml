@@ -473,5 +473,8 @@ opening the system text to speech settings fails">Failed to open text to speech 
     <string name="exam_metrics_performance_explanation" comment="Explains what the performance metric means">Performance is your estimated chance of correctly answering a new, exam-style question \u2014 including ones you have never seen. It is shaped by both your flashcard reviews and your practice exams, with practice exams counting more.</string>
     <string name="exam_metrics_readiness_explanation" comment="Explains what the readiness metric means">Projected MCAT is the score we\'d expect you to get on the exam right now, derived from your performance across the four sections.</string>
     <string name="exam_metrics_coverage" comment="How much of the exam has been studied; %1$d is a percent">MCAT studied: %1$d%%</string>
+    <string name="exam_metrics_exam_date" comment="Target exam date the metrics are projected to; %1$s is a date">Exam date: %1$s</string>
+    <string name="exam_metrics_exam_date_unset" comment="Shown when no exam date has been set">Exam date: not set (projecting to a 30-day horizon)</string>
+    <string name="exam_metrics_set_exam_date" comment="Button that opens a date picker to set the exam date">Set exam date</string>
 </resources>
 

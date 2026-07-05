@@ -61,6 +61,16 @@ import timber.log.Timber
 import com.ichi2.anki.common.destinations.Destination as NavigateDestination
 
 /**
+ * Home-screen exam data rendered together: performance/readiness metrics,
+ * MCAT coverage, and the user's target exam date (unix seconds; null when unset).
+ */
+data class ExamInfo(
+    val metrics: ExamMetricsResponse?,
+    val coverage: ExamCoverageResponse?,
+    val examDateSecs: Long?,
+)
+
+/**
  * ViewModel for the [DeckPicker]
  */
 class DeckPickerViewModel :
@@ -171,9 +181,14 @@ class DeckPickerViewModel :
     /** Overall/per-section MCAT exam coverage for the home screen; null until loaded. */
     val flowOfExamCoverage = MutableStateFlow<ExamCoverageResponse?>(null)
 
-    /** Metrics + coverage paired, so the home screen renders them together. */
+    /** User's target exam date (unix seconds); null when unset. */
+    val flowOfExamDate = MutableStateFlow<Long?>(null)
+
+    /** Metrics, coverage and exam date together, so the home screen renders them as one. */
     val flowOfExamInfo =
-        combine(flowOfExamMetrics, flowOfExamCoverage) { metrics, coverage -> metrics to coverage }
+        combine(flowOfExamMetrics, flowOfExamCoverage, flowOfExamDate) { metrics, coverage, examDate ->
+            ExamInfo(metrics, coverage, examDate)
+        }
 
     /** Flow that determines when the resizing divider should be visible */
     val flowOfResizingDividerVisible =
@@ -360,6 +375,16 @@ class DeckPickerViewModel :
         }
 
     /**
+     * Persist the user's target exam date (unix seconds) and reload the metrics
+     * so the home screen and memory model reflect the new horizon.
+     */
+    fun setExamDate(secs: Long): Job =
+        viewModelScope.launch(Dispatchers.IO) {
+            withCol { config.set("mcatExamDate", secs) }
+            reloadDeckCounts().join()
+        }
+
+    /**
      * Launch an asynchronous task to rebuild the deck list and recalculate the deck counts. Use this
      * after any change to a deck (e.g., rename, importing, add/delete) that needs to be reflected
      * in the deck list.
@@ -403,6 +428,7 @@ class DeckPickerViewModel :
 
                 flowOfExamMetrics.value = withCol { examMetrics() }
                 flowOfExamCoverage.value = withCol { examCoverage() }
+                flowOfExamDate.value = withCol { config.get<Long>("mcatExamDate") }
 
                 /**
                  * Checks the current scheduler version and prompts the upgrade dialog if using the legacy version.
