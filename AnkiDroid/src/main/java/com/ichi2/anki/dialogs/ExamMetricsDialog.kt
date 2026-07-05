@@ -47,14 +47,25 @@ fun Context.showExamMetricsDialog(
 }
 
 /** Opens a date picker (seeded with the current exam date) and reports the
- * chosen day back as a unix timestamp in seconds at local midnight. */
+ * chosen day back as a unix timestamp in seconds at local midnight. Past dates
+ * cannot be selected. */
 private fun Context.showExamDatePicker(
     currentSecs: Long?,
     onPicked: (Long) -> Unit,
 ) {
+    val today =
+        Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
     val seed = Calendar.getInstance()
     if (currentSecs != null && currentSecs > 0) {
         seed.timeInMillis = currentSecs * 1000L
+    }
+    if (seed.before(today)) {
+        seed.timeInMillis = today.timeInMillis
     }
     DatePickerDialog(
         this,
@@ -64,12 +75,17 @@ private fun Context.showExamDatePicker(
                     clear()
                     set(year, month, dayOfMonth)
                 }
+            if (picked.before(today)) {
+                return@DatePickerDialog
+            }
             onPicked(picked.timeInMillis / 1000L)
         },
         seed.get(Calendar.YEAR),
         seed.get(Calendar.MONTH),
         seed.get(Calendar.DAY_OF_MONTH),
-    ).show()
+    ).apply {
+        datePicker.minDate = today.timeInMillis
+    }.show()
 }
 
 /**
