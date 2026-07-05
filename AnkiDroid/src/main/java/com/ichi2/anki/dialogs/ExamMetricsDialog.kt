@@ -137,46 +137,56 @@ fun buildExamMetricsMessage(
             return@buildString
         }
 
-        val readinessBySection =
-            metrics.readinessSectionsList.associateBy({ it.section }, { it.estimate })
+        val overallLabel = context.getString(R.string.exam_metrics_overall)
 
-        appendBlock(
-            context,
-            context.getString(R.string.exam_metrics_overall),
-            performanceOverall,
-            metrics.readinessOverall,
-        )
+        // Performance breakdown: overall, then each eligible section.
+        append('\n')
+        append(context.getString(R.string.exam_metrics_performance)).append('\n')
+        appendPerformanceLine(context, overallLabel, performanceOverall)
         for (performanceSection in metrics.performanceSectionsList) {
-            val readiness = readinessBySection[performanceSection.section] ?: continue
             if (!performanceSection.estimate.hasEnoughData) continue
-            append('\n')
-            appendBlock(context, performanceSection.section, performanceSection.estimate, readiness)
+            appendPerformanceLine(context, performanceSection.section, performanceSection.estimate)
         }
+
+        // Readiness (projected MCAT) breakdown: overall, then each eligible section.
+        append('\n')
+        append(context.getString(R.string.exam_metrics_readiness)).append('\n')
+        appendReadinessLine(overallLabel, metrics.readinessOverall)
+        for (readinessSection in metrics.readinessSectionsList) {
+            if (!readinessSection.estimate.hasEnoughData) continue
+            appendReadinessLine(readinessSection.section, readinessSection.estimate)
+        }
+
         if (performanceOverall.justification.isNotBlank()) {
             append('\n')
             append(performanceOverall.justification)
         }
     }
 
-/** Appends a "heading / performance / readiness" block for one section. */
-private fun StringBuilder.appendBlock(
+/** Appends one "label: NN% (lo%-hi%, NN% confidence)" performance line. */
+private fun StringBuilder.appendPerformanceLine(
     context: Context,
-    heading: String,
-    performance: MetricEstimate,
-    readiness: MetricEstimate,
+    label: String,
+    estimate: MetricEstimate,
 ) {
-    append(heading).append('\n')
     append("  ")
-        .append(context.getString(R.string.exam_metrics_performance))
+        .append(label)
         .append(": ")
-        .append("${performance.score.roundToInt()}%")
+        .append("${estimate.score.roundToInt()}%")
         .append(
-            " (${performance.rangeMin.roundToInt()}%\u2013${performance.rangeMax.roundToInt()}%, ",
-        ).append(context.getString(R.string.exam_metrics_confidence_suffix, performance.confidence.roundToInt()))
+            " (${estimate.rangeMin.roundToInt()}%\u2013${estimate.rangeMax.roundToInt()}%, ",
+        ).append(context.getString(R.string.exam_metrics_confidence_suffix, estimate.confidence.roundToInt()))
         .append(")\n")
+}
+
+/** Appends one "label: NNN (lo-hi)" projected-MCAT line. */
+private fun StringBuilder.appendReadinessLine(
+    label: String,
+    estimate: MetricEstimate,
+) {
     append("  ")
-        .append(context.getString(R.string.exam_metrics_readiness))
+        .append(label)
         .append(": ")
-        .append("${readiness.score.roundToInt()}")
-        .append(" (${readiness.rangeMin.roundToInt()}\u2013${readiness.rangeMax.roundToInt()})\n")
+        .append("${estimate.score.roundToInt()}")
+        .append(" (${estimate.rangeMin.roundToInt()}\u2013${estimate.rangeMax.roundToInt()})\n")
 }
