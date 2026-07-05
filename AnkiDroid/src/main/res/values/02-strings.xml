@@ -476,5 +476,19 @@ opening the system text to speech settings fails">Failed to open text to speech 
     <string name="exam_metrics_exam_date" comment="Target exam date the metrics are projected to; %1$s is a date">Exam date: %1$s</string>
     <string name="exam_metrics_exam_date_unset" comment="Shown when no exam date has been set">Exam date: not set (projecting to a 30-day horizon)</string>
     <string name="exam_metrics_set_exam_date" comment="Button that opens a date picker to set the exam date">Set exam date</string>
+
+    <!-- Home screen section labels and the first-run onboarding tour -->
+    <string name="home_section_study" comment="Label for the Study section of the home screen (the deck list)">Study</string>
+    <string name="home_section_practice" comment="Label for the Practice section of the home screen">Practice</string>
+    <string name="home_metrics_dropdown_title" comment="Title of the collapsible Metrics dropdown on the home screen">Metrics</string>
+    <string name="onboarding_study_title" comment="Tour step title for the Study section">Study</string>
+    <string name="onboarding_study_body" comment="Tour step description for the Study section">Your decks live here. Review your cards daily to keep everything fresh.</string>
+    <string name="onboarding_practice_title" comment="Tour step title for the Practice section">Practice</string>
+    <string name="onboarding_practice_body" comment="Tour step description for the Practice section">Ready to test yourself? Take an exam-style practice exam from here.</string>
+    <string name="onboarding_metrics_title" comment="Tour step title for the Metrics dropdown">Metrics</string>
+    <string name="onboarding_metrics_body" comment="Tour step description for the Metrics dropdown">Tap to expand your exam coverage, performance, and projected score any time.</string>
+    <string name="onboarding_next" comment="Button that advances to the next step of the onboarding tour">Next</string>
+    <string name="onboarding_done" comment="Button that finishes the onboarding tour">Done</string>
+    <string name="onboarding_skip" comment="Button that skips the onboarding tour">Skip</string>
 </resources>
 

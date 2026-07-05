@@ -49,7 +49,7 @@ fun Context.showExamMetricsDialog(
 /** Opens a date picker (seeded with the current exam date) and reports the
  * chosen day back as a unix timestamp in seconds at local midnight. Past dates
  * cannot be selected. */
-private fun Context.showExamDatePicker(
+internal fun Context.showExamDatePicker(
     currentSecs: Long?,
     onPicked: (Long) -> Unit,
 ) {

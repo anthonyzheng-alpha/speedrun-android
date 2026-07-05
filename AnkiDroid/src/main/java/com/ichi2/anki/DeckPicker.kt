@@ -139,11 +139,12 @@ import com.ichi2.anki.dialogs.SchedulerUpgradeDialog
 import com.ichi2.anki.dialogs.SyncErrorDialog
 import com.ichi2.anki.dialogs.SyncErrorDialog.Companion.newInstance
 import com.ichi2.anki.dialogs.SyncErrorDialog.SyncErrorDialogListener
+import com.ichi2.anki.dialogs.buildExamMetricsMessage
 import com.ichi2.anki.dialogs.customstudy.CustomStudyDialog
 import com.ichi2.anki.dialogs.customstudy.CustomStudyDialog.CustomStudyAction
 import com.ichi2.anki.dialogs.customstudy.CustomStudyDialog.CustomStudyAction.Companion.REQUEST_KEY
 import com.ichi2.anki.dialogs.setDeckPickerContextMenuResultListener
-import com.ichi2.anki.dialogs.showExamMetricsDialog
+import com.ichi2.anki.dialogs.showExamDatePicker
 import com.ichi2.anki.export.ExportDialogFragment
 import com.ichi2.anki.filtered.FilteredDeckOptionsFragment
 import com.ichi2.anki.introduction.CollectionPermissionScreenLauncher
@@ -152,6 +153,10 @@ import com.ichi2.anki.libanki.DeckId
 import com.ichi2.anki.libanki.sched.DeckNode
 import com.ichi2.anki.mediacheck.MediaCheckFragment
 import com.ichi2.anki.observability.ChangeManager
+import com.ichi2.anki.onboarding.OnboardingStep
+import com.ichi2.anki.onboarding.OnboardingTourView
+import com.ichi2.anki.onboarding.hasShownMcatOnboarding
+import com.ichi2.anki.onboarding.markMcatOnboardingShown
 import com.ichi2.anki.pages.AnkiPackageImporterFragment
 import com.ichi2.anki.pages.CongratsPage
 import com.ichi2.anki.pages.CongratsPage.Companion.onDeckCompleted
@@ -258,6 +263,9 @@ open class DeckPicker :
     val viewModel: DeckPickerViewModel by viewModels()
 
     private lateinit var binding: ActivityHomescreenBinding
+
+    /** Guards against re-triggering the first-run tour while it is on screen. */
+    private var onboardingTourStarted = false
 
     @VisibleForTesting
     internal val deckPickerBinding: IncludeDeckPickerBinding
@@ -548,6 +556,13 @@ open class DeckPicker :
         lifecycleScope.launch { applyDeckPickerBackground() }
 
         setupPullToSync()
+
+        // Practice section: launch the MCAT practice exam directly from the
+        // home screen (also available from the overflow menu).
+        deckPickerBinding.practiceButton.setOnClickListener {
+            Timber.i("DeckPicker:: Practice button pressed")
+            startActivity(Intent(this, PracticeExamActivity::class.java))
+        }
         // Setup the FloatingActionButtons
         floatingActionMenu =
             DeckPickerFloatingActionMenu(this, binding, this).apply {
@@ -684,6 +699,42 @@ open class DeckPicker :
         }
     }
 
+    /**
+     * Shows the one-time first-run tour (Study -> Practice -> Metrics) the first
+     * time an MCAT collection's home screen is populated. Only runs for MCAT
+     * collections (which have exam coverage) and only once per install.
+     */
+    private fun maybeShowOnboardingTour(info: ExamInfo) {
+        if (onboardingTourStarted) return
+        if ((info.coverage?.topicsTotal ?: 0) <= 0) return
+        if (hasShownMcatOnboarding()) return
+        onboardingTourStarted = true
+        // Wait for the deck list to settle so the target views are laid out.
+        deckPickerBinding.decks.post {
+            val steps =
+                listOf(
+                    OnboardingStep(
+                        deckPickerBinding.studySectionHeader,
+                        R.string.onboarding_study_title,
+                        R.string.onboarding_study_body,
+                    ),
+                    OnboardingStep(
+                        deckPickerBinding.practiceButton,
+                        R.string.onboarding_practice_title,
+                        R.string.onboarding_practice_body,
+                    ),
+                    OnboardingStep(
+                        deckPickerBinding.metricsCard,
+                        R.string.onboarding_metrics_title,
+                        R.string.onboarding_metrics_body,
+                    ),
+                )
+            OnboardingTourView(this).start(this, steps) {
+                markMcatOnboardingShown()
+            }
+        }
+    }
+
     @Suppress("UNUSED_PARAMETER")
     private fun setupFlows() {
         fun onDeckDeleted(result: DeckDeletionResult) {
@@ -741,33 +792,58 @@ open class DeckPicker :
 
         fun onExamInfoChanged(info: ExamInfo) {
             val metrics = info.metrics
-            val view = deckPickerBinding.examMetricsTextView
-            // Stay hidden until the metrics have loaded, then always show: either
-            // the numbers, or an honest "not enough data yet" summary.
+            val card = deckPickerBinding.metricsCard
+            // Stay hidden until the metrics have loaded, then show the "Metrics"
+            // dropdown (collapsed by default) summarising coverage, performance
+            // and projected score.
             if (metrics == null) {
-                view.isVisible = false
+                card.isVisible = false
                 return
             }
-            view.isVisible = true
+            card.isVisible = true
+
+            // Collapsed summary line lives in the header title so the card is
+            // useful at a glance without expanding.
             val performance = metrics.performanceOverall
-            view.text =
+            deckPickerBinding.metricsTitle.text =
                 if (performance.hasEnoughData) {
-                    getString(
-                        R.string.exam_metrics_home_summary,
-                        performance.score.roundToInt(),
-                        metrics.readinessOverall.score.roundToInt(),
-                    )
+                    getString(R.string.home_metrics_dropdown_title) +
+                        " · " +
+                        getString(
+                            R.string.exam_metrics_home_summary,
+                            performance.score.roundToInt(),
+                            metrics.readinessOverall.score.roundToInt(),
+                        )
                 } else {
-                    getString(R.string.exam_metrics_home_insufficient)
+                    getString(R.string.home_metrics_dropdown_title)
                 }
-            view.setOnClickListener {
-                showExamMetricsDialog(
+
+            deckPickerBinding.metricsBody.text =
+                buildExamMetricsMessage(
+                    context = this@DeckPicker,
                     metrics = metrics,
                     coverage = info.coverage,
                     examDateSecs = info.examDateSecs,
-                    onExamDatePicked = { secs -> viewModel.setExamDate(secs) },
                 )
+
+            deckPickerBinding.metricsSetExamDate.setOnClickListener {
+                showExamDatePicker(info.examDateSecs) { secs -> viewModel.setExamDate(secs) }
             }
+
+            deckPickerBinding.metricsHeader.setOnClickListener {
+                val expanded = !deckPickerBinding.metricsBody.isVisible
+                deckPickerBinding.metricsBody.isVisible = expanded
+                deckPickerBinding.metricsSetExamDate.isVisible = expanded
+                deckPickerBinding.metricsExpandIcon
+                    .animate()
+                    .rotation(if (expanded) 180f else 0f)
+                    .setDuration(150)
+                    .start()
+            }
+
+            // Now that the MCAT-specific home UI is populated, offer the
+            // first-run tour that points at Study, Practice and Metrics.
+            maybeShowOnboardingTour(info)
         }
 
         fun onCollectionStatusChanged(isInInitialState: Boolean) {
