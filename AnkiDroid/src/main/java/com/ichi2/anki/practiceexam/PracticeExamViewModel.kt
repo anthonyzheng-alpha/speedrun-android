@@ -112,7 +112,11 @@ class PracticeExamViewModel(
 
         val live =
             try {
-                PracticeExamGenerator.generate(requestedCount, enabledTopics)
+                PracticeExamGenerator.generate(
+                    requestedCount,
+                    enabledTopics,
+                    getApplication<Application>().getExternalFilesDir(null),
+                )
             } catch (e: Exception) {
                 Timber.w(e, "live generation failed; using bundled questions")
                 emptyList()

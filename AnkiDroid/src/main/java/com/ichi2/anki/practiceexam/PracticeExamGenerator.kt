@@ -12,6 +12,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
+import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
@@ -69,10 +70,13 @@ object PracticeExamGenerator {
     /**
      * Generate and verify up to [count] questions across [topics]. Returns an
      * empty list on any failure so the caller can fall back to bundled banks.
+     * When [logDir] is provided, the verify accuracy of the generated problems
+     * is appended to a plain-text eval log there.
      */
     suspend fun generate(
         count: Int,
         topics: Set<ExamTopic>,
+        logDir: File? = null,
     ): List<PracticeQuestion> =
         withContext(Dispatchers.IO) {
             val key = BuildConfig.OPENAI_API_KEY
@@ -89,7 +93,9 @@ object PracticeExamGenerator {
                 candidates += generateForTopic(key, topic, ceil(perTopic * 1.5).toInt())
             }
 
-            val vetted = verify(key, candidates).shuffled()
+            val verified = verify(key, candidates)
+            PracticeExamEvalLog.record(logDir, candidates, verified)
+            val vetted = verified.shuffled()
             val counters = HashMap<ExamTopic, Int>()
             vetted.take(wanted).map { q ->
                 val n = (counters[q.topic] ?: 0) + 1
